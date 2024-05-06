@@ -2,10 +2,7 @@ package com.fehteh.springhashmapnavigation.transformer;
 
 import com.fehteh.springhashmapnavigation.navigation.NavigationServiceContext;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SetIfMissing extends AbstractTransformer {
 
@@ -13,7 +10,8 @@ public class SetIfMissing extends AbstractTransformer {
     private final Object targetValue;
 
     private List<String> targetPath;
-    private boolean isMissing;
+    private boolean toApply;
+    private int toApplyNextIndex;
 
     public SetIfMissing(String target, Object targetValue) {
         this.target = target;
@@ -25,27 +23,32 @@ public class SetIfMissing extends AbstractTransformer {
 
     @Override
     public void runTransfomer(String navigationElement, NavigationServiceContext ctx, Object value) {
-        if(ctx.isLastElement()) {
+        if(!toApply && ctx.isLastElement()) {
             if(value == null) {
-                isMissing = true;
+                toApply = true;
+                toApplyNextIndex = ctx.getIndex();
             }
         }
 
-        if(isMissing) {
-            if(targetPath.get(0).equals("..")) {
-                targetPath = targetPath.subList(1, targetPath.size());
-            }
-            else {
-                if (value instanceof Map<?, ?> map) {
-                    ((Map<String,Object>)map).put(targetPath.get(0), targetValue);
+        if(toApply && ctx.getIndex() <= toApplyNextIndex) {
+            if(!(value instanceof Collection<?>)) {
+                toApplyNextIndex = ctx.getIndex() - 1;
+
+                if(targetPath.get(0).equals("..")) {
+                    targetPath = targetPath.subList(1, targetPath.size());
+                } else {
+                    if (value instanceof Map<?, ?> map) {
+                        ((Map<String,Object>)map).put(targetPath.get(0), targetValue);
+                        resetTransformer();
+                    }
                 }
-                resetTransformer();
             }
         }
     }
 
     private void resetTransformer() {
-        this.isMissing = false;
+        this.toApply = false;
+        this.toApplyNextIndex = 0;
         this.targetPath = new ArrayList<>(Arrays.asList(target.split("/")));
     }
 }

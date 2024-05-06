@@ -10,7 +10,7 @@ public abstract class AbstractTransformer {
         boolean lastElement = ctx.isLastElement();
         String valueClass = value != null ? value.getClass().getSimpleName() : "null";
 
-        System.out.println("AbstractTransformer: " + ctx.getCurrentFullpath() + " [value:" + valueClass + "]" + " [index:" + index + "]" + " [arrayIndex:" + arrayIndex + "]" + " [lastElement:" + lastElement + "]");
+        System.out.println("AbstractTransformer: " + ctx.getCurrentFullpath() + " [key:" + ctx.getCurrentPath() + "]" + " [value:" + valueClass + "]" + " [index:" + index + "]" + " [arrayIndex:" + arrayIndex + "]" + " [lastElement:" + lastElement + "]");
 
         runTransfomer(navigationElement, ctx, value);
     }

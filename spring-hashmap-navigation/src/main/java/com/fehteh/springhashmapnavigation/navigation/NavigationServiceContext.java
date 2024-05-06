@@ -1,17 +1,17 @@
 package com.fehteh.springhashmapnavigation.navigation;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class NavigationServiceContext {
     private int index = 0;
-    private int arrayIndex = 0;
+    private Map<Integer, Integer> arrayIndex;
 
     private List<String> pathSplit;
 
     public NavigationServiceContext(String path) {
         this.pathSplit = Arrays.asList(path.split("\\.+"));
+        this.arrayIndex = new HashMap<>();
     }
 
     public String getCurrentPath() {
@@ -27,17 +27,17 @@ public class NavigationServiceContext {
     }
 
     public int getIndex() {
-        return index;
+        return this.index;
     }
 
-    public void incIndex() {index++;}
-    public void decIndex() {index--;}
+    public void incIndex() {this.index++;}
+    public void decIndex() {this.index--;}
 
     public int getArrayIndex() {
-        return arrayIndex;
+        return arrayIndex.size() > 0 && arrayIndex.containsKey(this.index) ? arrayIndex.get(this.index) : 0;
     }
-    public void setArrayIndex(int index) {
-        this.arrayIndex = index;
+    public void setArrayIndex(int arrayIndex) {
+        this.arrayIndex.put(this.index, arrayIndex);
     }
 
 }
