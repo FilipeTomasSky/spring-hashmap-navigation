@@ -15,16 +15,12 @@ public class SpringHashmapNavigationApplication {
 	public static Map<String, Object> createStruct(){
 		Map<String, Object> struct = new HashMap<String, Object>();
 
-
-
 		Map<String, Object> metadata = new HashMap<String, Object>();
 		ArrayList<Map<String, Object>> products = new ArrayList<Map<String, Object>>();
 		Map<String,Object> product = new HashMap<String, Object>();
 		Map<String,Object> relevantContext = new HashMap<String, Object>();
 		ArrayList<Map<String, Object>> offers = new ArrayList<Map<String, Object>>();
 		Map<String,Object> offer = new HashMap<String,Object>();
-
-
 
 		metadata.put("products", products);
 		products.add(product);
@@ -41,7 +37,7 @@ public class SpringHashmapNavigationApplication {
 		offer.put("staticId","D2C_OFFER_MONTH");
 		offer = new HashMap<String, Object>();
 		offers.add(offer);
-		offer.put("staticId","D2C_OFFER_DAY_1");
+		//offer.put("staticId","D2C_OFFER_DAY_1");
 
 		product = new HashMap<String, Object>();
 		products.add(product);
@@ -73,9 +69,12 @@ public class SpringHashmapNavigationApplication {
 		Map<String, Object> metadata = createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.coco", new SetIfMissing("../../batatas", true));
-		//navigationService.navigateAndApply(metadata, "products.relevantContext.isIncluded", new DeleteIfContains("../../relevantContext"));
-		//navigationService.navigateAndApply(metadata, "products.relevantContext.isIncluded", new DeleteIfContains("../../../products"));
+		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new SetIfMissing("../batatas", true));
+		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.coco", new SetIfMissing("../../batatas", true));
+		   navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.isIncluded", new DeleteIfContains("../../relevantContext"));
+		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.isIncluded", new DeleteIfContains("../../../products"));
+		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new DeleteIfContains("../../offers"));
+		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new DeleteIfContains("../../../relevantContext"));
 
 		var a = metadata;
 	}
