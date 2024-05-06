@@ -17,6 +17,12 @@ public class DeleteIfContains extends AbstractTransformer {
 
     @Override
     public void runTransfomer(String navigationElement, NavigationServiceContext ctx, Object value) {
+        if(ctx.isLastElement()) {
+            if(value != null) {
+                contains = true;
+            }
+        }
+
         if(contains) {
             if(targetPath.size() > 0 && targetPath.get(0).equals("..")) {
                 targetPath = targetPath.subList(1, targetPath.size());
@@ -30,13 +36,6 @@ public class DeleteIfContains extends AbstractTransformer {
                     ctx.setArrayIndex(ctx.getArrayIndex() - 1);
                 }
                 resetTransformer();
-            }
-        }
-
-        if(ctx.isLastElement()) {
-            if(value == null) {
-                contains = true;
-                System.out.println("DeleteIfContainsTransformer: " + ctx.getCurrentPath() + " [contains:" + true + "]");
             }
         }
     }

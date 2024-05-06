@@ -23,6 +23,11 @@ public class SetIfMissing extends AbstractTransformer {
 
     @Override
     public void runTransfomer(String navigationElement, NavigationServiceContext ctx, Object value) {
+        if(ctx.isLastElement()) {
+            if(value == null) {
+                isMissing = true;
+            }
+        }
 
         if(isMissing) {
             if(targetPath.get(0).equals("..")) {
@@ -33,12 +38,6 @@ public class SetIfMissing extends AbstractTransformer {
                     ((Map<String,Object>)map).put(targetPath.get(0), targetValue);
                 }
                 resetTransformer();
-            }
-        }
-
-        if(ctx.isLastElement()) {
-            if(value == null) {
-                isMissing = true;
             }
         }
     }

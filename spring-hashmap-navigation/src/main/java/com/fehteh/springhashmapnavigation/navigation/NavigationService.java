@@ -23,6 +23,7 @@ public class NavigationService {
             {
                 Object childrenObject = ((ArrayList<?>) arrayList).get(context.getArrayIndex());
                 navigateApplyAndNotify(childrenObject, context, transformer);
+                transformer.notify(context.getCurrentPath(), context, entryObject);
             }
             context.incIndex();
             context.setArrayIndex(0);
@@ -31,9 +32,12 @@ public class NavigationService {
 
     private void navigateApplyAndNotify(Object childrenObject, NavigationServiceContext context, AbstractTransformer transformer) {
         transformer.notify(context.getCurrentPath(), context, childrenObject);
-        context.incIndex();
-        navigateAndApply(childrenObject, context, transformer);
-        context.decIndex();
-        transformer.notify(context.getCurrentPath(), context, childrenObject);
+
+        if(!context.isLastElement()) {
+            context.incIndex();
+            navigateAndApply(childrenObject, context, transformer);
+            context.decIndex();
+            transformer.notify(context.getCurrentPath(), context, childrenObject);
+        }
     }
 }
