@@ -1,4 +1,6 @@
-package com.fehteh.springhashmapnavigation.navigation;
+package com.fehteh.springhashmapnavigation.transformer;
+
+import com.fehteh.springhashmapnavigation.navigation.NavigationServiceContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;

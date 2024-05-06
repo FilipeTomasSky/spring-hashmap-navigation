@@ -1,6 +1,6 @@
 package com.fehteh.springhashmapnavigation;
 
-import com.fehteh.springhashmapnavigation.navigation.DeleteIfContains;
+import com.fehteh.springhashmapnavigation.transformer.DeleteIfContains;
 import com.fehteh.springhashmapnavigation.navigation.NavigationService;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

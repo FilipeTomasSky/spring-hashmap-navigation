@@ -1,5 +1,7 @@
 package com.fehteh.springhashmapnavigation.navigation;
 
+import com.fehteh.springhashmapnavigation.transformer.AbstractTransformer;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
