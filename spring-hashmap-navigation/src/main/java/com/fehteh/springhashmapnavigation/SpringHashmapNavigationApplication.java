@@ -2,6 +2,7 @@ package com.fehteh.springhashmapnavigation;
 
 import com.fehteh.springhashmapnavigation.navigation.DeleteIfContains;
 import com.fehteh.springhashmapnavigation.navigation.NavigationService;
+import com.fehteh.springhashmapnavigation.navigation.SetIfMissing;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.ArrayList;
@@ -12,6 +13,10 @@ import java.util.Map;
 public class SpringHashmapNavigationApplication {
 
 	public static Map<String, Object> createStruct(){
+		Map<String, Object> struct = new HashMap<String, Object>();
+
+
+
 		Map<String, Object> metadata = new HashMap<String, Object>();
 		ArrayList<Map<String, Object>> products = new ArrayList<Map<String, Object>>();
 		Map<String,Object> product = new HashMap<String, Object>();
@@ -58,7 +63,9 @@ public class SpringHashmapNavigationApplication {
 		offers.add(offer);
 		offer.put("staticId","D2C_OFFER_DAY_2");
 
-		return metadata;
+		struct.put("metadata", metadata);
+
+		return struct;
 	}
 
 
@@ -66,9 +73,9 @@ public class SpringHashmapNavigationApplication {
 		Map<String, Object> metadata = createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		//navigationService.navigateAndApply(metadata, "products.relevantContext.isIncluded", new SetIfMissing("../batatas", true));
+		navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.coco", new SetIfMissing("../../batatas", true));
 		//navigationService.navigateAndApply(metadata, "products.relevantContext.isIncluded", new DeleteIfContains("../../relevantContext"));
-		navigationService.navigateAndApply(metadata, "products.relevantContext.isIncluded", new DeleteIfContains("../../../products"));
+		//navigationService.navigateAndApply(metadata, "products.relevantContext.isIncluded", new DeleteIfContains("../../../products"));
 
 		var a = metadata;
 	}
