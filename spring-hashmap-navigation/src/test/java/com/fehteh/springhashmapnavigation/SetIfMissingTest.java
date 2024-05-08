@@ -14,12 +14,12 @@ class SetIfMissingTest {
 
 	@Test
 	void setIfMissingBubbleUpArray() {
-		Map<String, Object> structure = SpringHashmapNavigationApplication.createStruct();
+		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApply(structure, "metadata.products.relevantContext.isIncluded", new SetIfMissing("../newField", true));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.isIncluded", new SetIfMissing("../newField", true));
 
-		Map<String, Object> metadata = (Map<String, Object>) structure.get("metadata");
+		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
 		ArrayList<Map<String, Object>> products = (ArrayList<Map<String, Object>>) metadata.get("products");
 		assertNotNull(products);
@@ -36,26 +36,26 @@ class SetIfMissingTest {
 
 	@Test
 	void setIfMissingBubbleUpSetOutsideArray() {
-		Map<String, Object> structure = SpringHashmapNavigationApplication.createStruct();
+		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApply(structure, "metadata.products.relevantContext.isIncluded", new SetIfMissing("../../../newField", true));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.isIncluded", new SetIfMissing("../../../newField", true));
 
-		Map<String, Object> metadata = (Map<String, Object>) structure.get("metadata");
+		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
-		boolean newField = (boolean) metadata.get("newField");
 
+		boolean newField = (boolean) metadata.get("newField");
 		assertTrue(newField);
 	}
 
 	@Test
 	void setIfMissingBubbleUpSetTwoArrayElements() {
-		Map<String, Object> structure = SpringHashmapNavigationApplication.createStruct();
+		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApply(structure, "metadata.products.relevantContext.missing", new SetIfMissing("../newField", "yes"));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.missing", new SetIfMissing("../newField", "yes"));
 
-		Map<String, Object> metadata = (Map<String, Object>) structure.get("metadata");
+		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
 		ArrayList<Map<String, Object>> products = (ArrayList<Map<String, Object>>) metadata.get("products");
 		assertNotNull(products);
@@ -72,12 +72,12 @@ class SetIfMissingTest {
 
 	@Test
 	void setIfMissingBubbleDownArray() {
-		Map<String, Object> structure = SpringHashmapNavigationApplication.createStruct();
+		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApply(structure, "metadata.products.relevantContext.missing", new SetIfMissing("../newField/missing", "yes"));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.missing", new SetIfMissing("../newField/missing", "yes"));
 
-		Map<String, Object> metadata = (Map<String, Object>) structure.get("metadata");
+		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
 		ArrayList<Map<String, Object>> products = (ArrayList<Map<String, Object>>) metadata.get("products");
 		assertNotNull(products);
@@ -94,5 +94,26 @@ class SetIfMissingTest {
 
 		assertEquals("yes", missing1);
 		assertEquals("yes", missing2);
+	}
+
+	@Test
+	void setIfMissingArrayInArray() {
+		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
+
+		NavigationService navigationService = new NavigationService();
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.offers.staticId", new SetIfMissing("../../newField", true));
+
+		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
+		assertNotNull(metadata);
+		ArrayList<Map<String, Object>> products = (ArrayList<Map<String, Object>>) metadata.get("products");
+		assertNotNull(products);
+		Map<String, Object> relevantContext1 = (Map<String, Object>) products.get(0).get("relevantContext");
+		assertNotNull(relevantContext1);
+		Map<String, Object> relevantContext2 = (Map<String, Object>) products.get(1).get("relevantContext");
+		assertNotNull(relevantContext2);
+		boolean newField1 = (boolean) relevantContext1.get("newField");
+		assertTrue(newField1);
+
+		assertNull(relevantContext2.get("newField"));
 	}
 }
