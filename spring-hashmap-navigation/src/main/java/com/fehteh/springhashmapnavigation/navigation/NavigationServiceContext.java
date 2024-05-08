@@ -4,10 +4,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class NavigationServiceContext {
-    private int index = 0;
-    private Map<Integer, Integer> arrayIndex;
+    public int index = 0;
+    Map<Integer, Integer> arrayIndex;
 
-    private List<String> pathSplit;
+    List<String> pathSplit;
 
     public NavigationServiceContext(String path) {
         this.pathSplit = Arrays.asList(path.split("\\.+"));
@@ -24,10 +24,6 @@ public class NavigationServiceContext {
 
     public boolean isLastElement() {
         return pathSplit.size() - 1 == index;
-    }
-
-    public int getIndex() {
-        return this.index;
     }
 
     public void incIndex() {this.index++;}

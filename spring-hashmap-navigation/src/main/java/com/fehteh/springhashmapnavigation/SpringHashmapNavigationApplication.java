@@ -68,12 +68,13 @@ public class SpringHashmapNavigationApplication {
 		Map<String, Object> metadata = createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new SetIfMissing("../batatas", true));
+		navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new SetIfMissing("../batatas/batatas1", true));
+		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new SetIfMissing("../", true));
 		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.coco", new SetIfMissing("../../batatas", true));
-		navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.isIncluded", new DeleteIfContains("../../relevantContext"));
-		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.isIncluded", new DeleteIfContains("../../../products"));
-		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new DeleteIfContains("../../offers"));
-		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new DeleteIfContains("../../../relevantContext"));
+		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.isIncluded", new DeleteIfExists("../../relevantContext"));
+		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.isIncluded", new DeleteIfExists("../../../products"));
+		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new DeleteIfExists("../../offers"));
+		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new DeleteIfExists("../../../relevantContext"));
 
 		var a = metadata;
 	}

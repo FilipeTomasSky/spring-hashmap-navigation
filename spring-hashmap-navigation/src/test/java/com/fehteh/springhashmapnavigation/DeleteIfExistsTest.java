@@ -1,21 +1,21 @@
 package com.fehteh.springhashmapnavigation;
 
 import com.fehteh.springhashmapnavigation.navigation.NavigationService;
-import com.fehteh.springhashmapnavigation.transformer.DeleteIfContains;
+import com.fehteh.springhashmapnavigation.transformer.DeleteIfExists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-public class DeleteIfContainsTest {
+public class DeleteIfExistsTest {
 
     @Test
     void deleteIfMissing_1() {
         Map<String, Object> metadata = SpringHashmapNavigationApplication.createStruct();
 
         NavigationService navigationService = new NavigationService();
-        navigationService.navigateAndApply(metadata, "products.relevantContext.isIncluded", new DeleteIfContains("../../relevantContext"));
+        navigationService.navigateAndApply(metadata, "products.relevantContext.isIncluded", new DeleteIfExists("../../relevantContext"));
         ArrayList<Map<String, Object>> products = (ArrayList<Map<String, Object>>) metadata.get("products");
         Map<String, Object> relevantContext = (Map<String, Object>) products.get(0).get("relevantContext");
 
@@ -27,7 +27,7 @@ public class DeleteIfContainsTest {
         Map<String, Object> metadata = SpringHashmapNavigationApplication.createStruct();
 
         NavigationService navigationService = new NavigationService();
-        navigationService.navigateAndApply(metadata, "products.relevantContext.isIncluded", new DeleteIfContains("../../../products"));
+        navigationService.navigateAndApply(metadata, "products.relevantContext.isIncluded", new DeleteIfExists("../../../products"));
         ArrayList<Map<String, Object>> products = (ArrayList<Map<String, Object>>) metadata.get("products");
 
         Assertions.assertEquals(1, products.size());

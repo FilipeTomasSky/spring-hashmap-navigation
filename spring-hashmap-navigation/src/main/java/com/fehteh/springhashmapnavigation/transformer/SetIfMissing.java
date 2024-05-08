@@ -5,50 +5,63 @@ import com.fehteh.springhashmapnavigation.navigation.NavigationServiceContext;
 import java.util.*;
 
 public class SetIfMissing extends AbstractTransformer {
+    private final String targetPath;
+    private final Object newValue;
 
-    private final String target;
-    private final Object targetValue;
-
-    private List<String> targetPath;
+    private List<String> targetPathList;
     private boolean toApply;
     private int toApplyNextIndex;
 
-    public SetIfMissing(String target, Object targetValue) {
-        this.target = target;
-        this.targetValue = targetValue;
+    public SetIfMissing(String targetPath, Object newValue) {
+        this.targetPath = targetPath;
+        this.newValue = newValue;
 
         resetTransformer();
     }
 
 
     @Override
-    public void runTransfomer(String navigationElement, NavigationServiceContext ctx, Object value) {
+    public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
         if(!toApply && ctx.isLastElement()) {
-            if(value == null) {
+            if(valueObj == null) {
                 toApply = true;
-                toApplyNextIndex = ctx.getIndex();
+                toApplyNextIndex = ctx.index;
             }
         }
 
-        if(toApply && ctx.getIndex() <= toApplyNextIndex) {
-            if(!(value instanceof Collection<?>)) {
-                toApplyNextIndex = ctx.getIndex() - 1;
-
-                if(targetPath.get(0).equals("..")) {
-                    targetPath = targetPath.subList(1, targetPath.size());
+        if(toApply && ctx.index <= toApplyNextIndex) {
+            if(!(valueObj instanceof Collection<?>)) {
+                if(targetPathList.get(0).equals("..")) {
+                    toApplyNextIndex = ctx.index - 1;
+                    targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
-                    if (value instanceof Map<?, ?> map) {
-                        ((Map<String,Object>)map).put(targetPath.get(0), targetValue);
-                        resetTransformer();
-                    }
+                    createPath(valueObj);
                 }
             }
+        }
+    }
+
+    private void createPath(Object valueObj) {
+        if (valueObj instanceof Map<?, ?> map) {
+            while(targetPathList.size() != 1) {
+                Object pathElement = targetPathList.get(0);
+
+                if(map.get(pathElement) == null) {
+                    ((Map<String,Object>)map).put(targetPathList.get(0), new HashMap<String, Object>());
+                }
+                map = (Map<?, ?>)map.get(pathElement);
+
+                targetPathList = targetPathList.subList(1, targetPathList.size());
+            }
+
+            ((Map<String,Object>)map).put(targetPathList.get(0), newValue);
+            resetTransformer();
         }
     }
 
     private void resetTransformer() {
         this.toApply = false;
         this.toApplyNextIndex = 0;
-        this.targetPath = new ArrayList<>(Arrays.asList(target.split("/")));
+        this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
     }
 }
