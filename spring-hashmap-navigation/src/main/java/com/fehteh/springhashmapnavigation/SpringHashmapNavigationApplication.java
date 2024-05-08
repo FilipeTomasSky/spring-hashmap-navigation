@@ -15,6 +15,12 @@ public class SpringHashmapNavigationApplication {
 		Map<String, Object> struct = new HashMap<String, Object>();
 
 		Map<String, Object> metadata = new HashMap<String, Object>();
+		struct.put("metadata", metadata);
+
+		Map<String,Object> productCount = new HashMap<String, Object>();
+		productCount.put("count", 2);
+		metadata.put("productCount", productCount);
+
 		ArrayList<Map<String, Object>> products = new ArrayList<Map<String, Object>>();
 		Map<String,Object> product = new HashMap<String, Object>();
 		Map<String,Object> relevantContext = new HashMap<String, Object>();
@@ -58,7 +64,6 @@ public class SpringHashmapNavigationApplication {
 		offers.add(offer);
 		offer.put("staticId","D2C_OFFER_DAY_2");
 
-		struct.put("metadata", metadata);
 
 		return struct;
 	}

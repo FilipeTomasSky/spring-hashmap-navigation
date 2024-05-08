@@ -13,7 +13,19 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DeleteIfExistsTest {
 
     @Test
-    void deleteIfMissingFieldOfElementOfArray() {
+    void deleteIfExistsBubbleUpField() {
+        Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
+
+        NavigationService navigationService = new NavigationService();
+        Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
+
+        assertNotNull(metadata.get("productCount"));
+        navigationService.navigateAndApply(struct, "metadata.productCount.count", new DeleteIfExists("../../productCount"));
+        assertNull(metadata.get("productCount"));
+    }
+
+    @Test
+    void deleteIfExistsFieldOfElementOfArray() {
         Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
         NavigationService navigationService = new NavigationService();
@@ -29,7 +41,7 @@ public class DeleteIfExistsTest {
     }
 
     @Test
-    void deleteIfMissingElementOfArray() {
+    void deleteIfExistsElementOfArray() {
         Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
         NavigationService navigationService = new NavigationService();
