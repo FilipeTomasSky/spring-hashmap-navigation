@@ -22,13 +22,11 @@ public class DeleteIfExists extends AbstractTransformer {
     public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object value) {
         if(!toApply && ctx.isLastElement()) {
             if(value != null) {
-                System.out.println("DeleteIfExists: should apply");
                 toApply = true;
                 toApplyNextIndex = ctx.index;
             }
         }
-
-        if(toApply && ctx.index <= toApplyNextIndex) {
+        if(toApply && (ctx.index <= toApplyNextIndex || value instanceof Collection<?>)) {
             if(!targetPath.get(0).equals("..")) {
                 if (value instanceof Map<?, ?> map) {
                     System.out.println("DeleteIfExists: apply 1");
@@ -56,8 +54,5 @@ public class DeleteIfExists extends AbstractTransformer {
         this.toApply = false;
         this.toApplyNextIndex = 0;
         this.targetPath = new ArrayList<>(Arrays.asList(target.split("/")));
-
-        System.out.println("DeleteIfExists: reset");
-
     }
 }

@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class NavigationServiceContext {
     public int index = 0;
-    Map<Integer, Integer> arrayIndex;
+    Map<Integer, Integer> arrayIndex; // key -> index of where the array is; arrayIndex -> index inside of the array
 
     List<String> pathSplit;
 
