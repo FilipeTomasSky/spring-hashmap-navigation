@@ -64,6 +64,17 @@ public class SpringHashmapNavigationApplication {
 		offers.add(offer);
 		offer.put("staticId","D2C_OFFER_DAY_2");
 
+		product = new HashMap<String, Object>();
+		products.add(product);
+		product.put("category","D2B");
+		product.put("quantity",1);
+		product.put("staticId","D2B_SUBSCRIPTION_MONTH");
+		product.put("id",33333);
+		relevantContext = new HashMap<String, Object>();
+		product.put("relevantContext", relevantContext);
+		relevantContext.put("nextRenewalDueDate", "2021-10-17T23:59:59+00:00");
+		relevantContext.put("duration", "P18M");
+
 
 		return struct;
 	}

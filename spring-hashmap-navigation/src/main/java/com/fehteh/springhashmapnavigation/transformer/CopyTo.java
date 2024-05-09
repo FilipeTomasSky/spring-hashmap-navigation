@@ -4,20 +4,17 @@ import com.fehteh.springhashmapnavigation.navigation.NavigationServiceContext;
 
 import java.util.*;
 
-public class SetIfContains extends AbstractTransformer {
+public class CopyTo extends AbstractTransformer {
     private final String targetPath;
-    private final String comparableValue;
-    private final Object newValue;
+    private Object newValue;
 
     private List<String> targetPathList;
     private boolean toApply;
     private int toApplyNextIndex;
 
 
-    public SetIfContains(String targetPath, Object comparableValue, Object newValue) {
+    public CopyTo(String targetPath) {
         this.targetPath = targetPath;
-        this.comparableValue = comparableValue.toString();
-        this.newValue = newValue;
 
         resetTransformer();
     }
@@ -25,9 +22,10 @@ public class SetIfContains extends AbstractTransformer {
     @Override
     public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
         if(!toApply && ctx.isLastElement()) {
-            if(valueObj != null && (valueObj.toString()).contains(comparableValue)) {
+            if(valueObj != null) {
                 toApply = true;
                 toApplyNextIndex = ctx.index;
+                newValue = valueObj;
             }
         }
 
