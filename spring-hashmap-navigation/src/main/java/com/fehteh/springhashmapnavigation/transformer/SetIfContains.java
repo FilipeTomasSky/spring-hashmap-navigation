@@ -7,43 +7,57 @@ import java.util.*;
 public class SetIfContains extends AbstractTransformer{
     private final String targetPath;
     private final String comparableValue;
-    private final String newValue;
+    private final Object newValue;
 
     private List<String> targetPathList;
     private boolean toApply;
     private int toApplyNextIndex;
 
 
-    public SetIfContains(String targetPath, String comparableValue, String newValue) {
+    public SetIfContains(String targetPath, Object comparableValue, Object newValue) {
         this.targetPath = targetPath;
-        this.comparableValue = comparableValue;
+        this.comparableValue = comparableValue.toString();
         this.newValue = newValue;
 
         resetTransformer();
     }
 
     @Override
-    public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object value) {
+    public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
         if(!toApply && ctx.isLastElement()) {
-            if(((String)value).contains(comparableValue)) {
+            if(valueObj != null && (valueObj.toString()).contains(comparableValue)) {
                 toApply = true;
                 toApplyNextIndex = ctx.index;
             }
         }
 
-        if(toApply && ctx.index <= toApplyNextIndex) { //check if we are moving backwards in path to apply (by checking indexes)
-            if(!(value instanceof Collection<?>)) {
-                toApplyNextIndex = ctx.index - 1;
-
+        if(toApply && ctx.index <= toApplyNextIndex) {
+            if(!(valueObj instanceof Collection<?>)) {
                 if(targetPathList.get(0).equals("..")) {
+                    toApplyNextIndex = ctx.index - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
-                    if (value instanceof Map<?, ?> map) {
-                        ((Map<String,Object>)map).put(targetPathList.get(0), newValue);
-                        resetTransformer();
-                    }
+                    createPath(valueObj);
                 }
             }
+        }
+    }
+
+    private void createPath(Object valueObj) {
+        if (valueObj instanceof Map<?, ?> map) {
+            while(targetPathList.size() != 1) {
+                Object pathElement = targetPathList.get(0);
+
+                if(map.get(pathElement) == null) {
+                    ((Map<String,Object>)map).put(targetPathList.get(0), new HashMap<String, Object>());
+                }
+
+                map = (Map<?, ?>)map.get(pathElement);
+                targetPathList = targetPathList.subList(1, targetPathList.size());
+            }
+
+            ((Map<String,Object>)map).put(targetPathList.get(0), newValue);
+            resetTransformer();
         }
     }
 

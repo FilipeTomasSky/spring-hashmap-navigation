@@ -6,43 +6,43 @@ import java.util.*;
 
 public class DeleteIfExists extends AbstractTransformer {
 
-    private String target;
+    private String targetPath;
 
-    private List<String> targetPath;
+    private List<String> targetPathList;
     private boolean toApply;
     private int toApplyNextIndex;
 
-    public DeleteIfExists(String target) {
-        this.target = target;
+    public DeleteIfExists(String targetPath) {
+        this.targetPath = targetPath;
 
         resetTransformer();
     }
 
     @Override
-    public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object value) {
+    public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
         if(!toApply && ctx.isLastElement()) {
-            if(value != null) {
+            if(valueObj != null) {
                 toApply = true;
                 toApplyNextIndex = ctx.index;
             }
         }
-        if(toApply && (ctx.index <= toApplyNextIndex || value instanceof Collection<?>)) {
-            if(!targetPath.get(0).equals("..")) {
-                if (value instanceof Map<?, ?> map) {
+        if(toApply && (ctx.index <= toApplyNextIndex || valueObj instanceof Collection<?>)) {
+            if(!targetPathList.get(0).equals("..")) {
+                if (valueObj instanceof Map<?, ?> map) {
 
-                    ((Map<String,Object>)map).remove(targetPath.get(0));
+                    ((Map<String,Object>)map).remove(targetPathList.get(0));
                 }
-                if(value instanceof Collection<?> arrayList) {
+                if(valueObj instanceof Collection<?> arrayList) {
 
                     ((ArrayList) arrayList).remove(ctx.getArrayIndex());
                     ctx.setArrayIndex(ctx.getArrayIndex() - 1);
                 }
                 resetTransformer();
-            } else if(!(value instanceof Collection<?>)) {
+            } else if(!(valueObj instanceof Collection<?>)) {
                 toApplyNextIndex = ctx.index - 1;
 
-                if (targetPath.get(0).equals("..")) {
-                    targetPath = targetPath.subList(1, targetPath.size());
+                if (targetPathList.get(0).equals("..")) {
+                    targetPathList = targetPathList.subList(1, targetPathList.size());
                 }
             }
         }
@@ -51,6 +51,6 @@ public class DeleteIfExists extends AbstractTransformer {
     private void resetTransformer() {
         this.toApply = false;
         this.toApplyNextIndex = 0;
-        this.targetPath = new ArrayList<>(Arrays.asList(target.split("/")));
+        this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
     }
 }
