@@ -29,12 +29,10 @@ public class DeleteIfExists extends AbstractTransformer {
         if(toApply && (ctx.index <= toApplyNextIndex || value instanceof Collection<?>)) {
             if(!targetPath.get(0).equals("..")) {
                 if (value instanceof Map<?, ?> map) {
-                    System.out.println("DeleteIfExists: apply 1");
 
                     ((Map<String,Object>)map).remove(targetPath.get(0));
                 }
                 if(value instanceof Collection<?> arrayList) {
-                    System.out.println("DeleteIfExists: apply 2");
 
                     ((ArrayList) arrayList).remove(ctx.getArrayIndex());
                     ctx.setArrayIndex(ctx.getArrayIndex() - 1);
