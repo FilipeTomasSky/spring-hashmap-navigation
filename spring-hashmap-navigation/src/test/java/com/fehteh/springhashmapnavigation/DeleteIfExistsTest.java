@@ -45,11 +45,14 @@ public class DeleteIfExistsTest {
         Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
         NavigationService navigationService = new NavigationService();
-        navigationService.navigateAndApply(struct, "metadata.products.relevantContext.isIncluded", new DeleteIfExists("../../../products"));
         Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
         ArrayList<Map<String, Object>> products = (ArrayList<Map<String, Object>>) metadata.get("products");
 
-        Assertions.assertEquals(1, products.size());
+        Assertions.assertEquals(3, products.size());
+
+        navigationService.navigateAndApply(struct, "metadata.products.relevantContext.isIncluded", new DeleteIfExists("../../../products"));
+
+        Assertions.assertEquals(2, products.size());
 
         Map<String, Object> relevantContext = (Map<String, Object>) products.get(0).get("relevantContext");
         assertNull(relevantContext.get("isIncluded"));
