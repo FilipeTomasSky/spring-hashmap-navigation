@@ -28,6 +28,7 @@ public class CopyTo extends AbstractTransformer {
                 toApply = true;
                 toApplyNextIndex = ctx.index;
                 newValue = valueObj;
+                this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
 
                 if(valueObj instanceof Collection<?>) {
                     if(newValue instanceof Collection<?>) {
@@ -36,14 +37,13 @@ public class CopyTo extends AbstractTransformer {
                         accumulatorArray.add(newValue);
                     }
                 }
-                return; //important: if the element we want to apply is an array we skip to the next
             }
         }
 
         if(toApply && ctx.index <= toApplyNextIndex) {
             System.out.println("trying to apply");
 
-            if(!(valueObj instanceof Collection<?>)) { //TODO this makes it fail when it's to copy full array to another inside the element. THIS is becase we dont count array as a path, only the item
+            if(ctx.isLastElement() || !(valueObj instanceof Collection<?>)) {
                 if(targetPathList.get(0).equals("..")) {
                     toApplyNextIndex = ctx.index - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
@@ -69,7 +69,12 @@ public class CopyTo extends AbstractTransformer {
 
             if(!accumulatorArray.isEmpty()) {
                 ArrayList<Object> array = ((Map<String, ArrayList<Object>>) map).get(pathElement);
+                if(array == null) {
+                    array = new ArrayList<>();
+                    ((Map<String, ArrayList<Object>>) map).put(targetPathList.get(0), array);
+                }
                 array.addAll(accumulatorArray);
+                accumulatorArray = new ArrayList<>();
             } else {
                 ((Map<String,Object>)map).put(targetPathList.get(0), newValue);
             }

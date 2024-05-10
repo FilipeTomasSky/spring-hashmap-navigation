@@ -22,12 +22,12 @@ public class SetIfMissing extends AbstractTransformer {
 
     @Override
     public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
-        if(!toApply && ctx.isLastElement()) {
-            if(valueObj == null) {
+        //if(!toApply && ctx.isLastElement()) { //TODO because some elements in the path before reaching the end can not exists
+            if(!toApply && valueObj == null) {
                 toApply = true;
                 toApplyNextIndex = ctx.index;
             }
-        }
+        //}
 
         if(toApply && ctx.index <= toApplyNextIndex) {
             if(!(valueObj instanceof Collection<?>)) {

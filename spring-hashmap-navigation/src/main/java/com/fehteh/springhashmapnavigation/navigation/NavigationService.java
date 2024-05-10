@@ -21,16 +21,12 @@ public class NavigationService {
 
         if(entryObject instanceof Collection<?> arrayList) {
             context.decIndex();
-            for(context.setArrayIndex(0); context.getArrayIndex() < arrayList.size(); context.setArrayIndex(context.getArrayIndex() + 1))
-            {
+            for(context.setArrayIndex(0); context.getArrayIndex() < arrayList.size(); context.setArrayIndex(context.getArrayIndex() + 1)) {
                 Object childrenObject = ((ArrayList<?>) arrayList).get(context.getArrayIndex());
                 navigateApplyAndNotify(childrenObject, context, transformer);
                 transformer.notify(context.getCurrentPath(), context, entryObject);
-                //if(context.getArrayIndex() >= arrayList.size()) {
-                //    context.setArrayIndex(-1);
-                //}
             }
-            //context.setArrayIndex(context.getArrayIndex() - 1); check this because arrayIndex is bigger than if should
+            context.setArrayIndex(context.getArrayIndex() - 1);
             context.incIndex();
         }
     }

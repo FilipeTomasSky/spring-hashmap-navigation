@@ -174,19 +174,31 @@ class SetIfMissingTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.offers.staticId", new SetIfMissing("../../newField", true));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.offers.staticId", new SetIfMissing("../newField", true));
+		//TODO cant it be targetPath "../../newField" because even offers that exists in product 2
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
 		ArrayList<Map<String, Object>> products = (ArrayList<Map<String, Object>>) metadata.get("products");
 		assertNotNull(products);
-		Map<String, Object> relevantContext1 = (Map<String, Object>) products.get(0).get("relevantContext");
-		assertNotNull(relevantContext1);
-		Map<String, Object> relevantContext2 = (Map<String, Object>) products.get(1).get("relevantContext");
-		assertNotNull(relevantContext2);
-		boolean newField1 = (boolean) relevantContext1.get("newField");
-		assertTrue(newField1);
 
-		assertNull(relevantContext2.get("newField"));
+		//product 0 has staticId
+		Map<String, Object> relevantContext = (Map<String, Object>) products.get(0).get("relevantContext");
+		ArrayList<Map<String, Object>> offers = (ArrayList<Map<String, Object>>) relevantContext.get("offers");
+		assertNotNull(offers.get(0).get("staticId"));
+
+		//product 1 has staticId
+		Map<String, Object> relevantContext1 = (Map<String, Object>) products.get(1).get("relevantContext");
+		ArrayList<Map<String, Object>> offers1 = (ArrayList<Map<String, Object>>) relevantContext.get("offers");
+		assertNotNull(offers1.get(0).get("staticId"));
+
+		//product 1 has no staticId and no offers
+		Map<String, Object> relevantContext2 = (Map<String, Object>) products.get(2).get("relevantContext");
+		ArrayList<Map<String, Object>> offers2 = (ArrayList<Map<String, Object>>) relevantContext2.get("offers");
+		assertNull(offers2);
+
+		boolean newField2 = (boolean) relevantContext2.get("newField");
+		assertTrue(newField2);
+
 	}
 }
