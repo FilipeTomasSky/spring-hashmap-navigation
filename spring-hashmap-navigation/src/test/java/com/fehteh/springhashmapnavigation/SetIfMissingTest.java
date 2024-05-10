@@ -108,7 +108,7 @@ class SetIfMissingTest {
 	}
 
 	@Test
-	void setIfMissingBubbleUpSetOutsideArray() {
+	void setIfMissingBubbleUpSetOutsideArray() { //This checks only for the first element that which the field is missing. Since if sets outside of the array, it looses the context of the index of the next array
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();

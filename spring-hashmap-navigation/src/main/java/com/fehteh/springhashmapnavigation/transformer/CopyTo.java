@@ -12,6 +12,8 @@ public class CopyTo extends AbstractTransformer {
     private boolean toApply;
     private int toApplyNextIndex;
 
+    private List<Object> accumulatorArray = new ArrayList<>();
+
 
     public CopyTo(String targetPath) {
         this.targetPath = targetPath;
@@ -21,16 +23,27 @@ public class CopyTo extends AbstractTransformer {
 
     @Override
     public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
-        if(!toApply && ctx.isLastElement()) {
+        if(!toApply && ctx.isLastElement() || ctx.isLastElement() && valueObj instanceof Collection<?>) {
             if(valueObj != null) {
                 toApply = true;
                 toApplyNextIndex = ctx.index;
                 newValue = valueObj;
+
+                if(valueObj instanceof Collection<?>) {
+                    if(newValue instanceof Collection<?>) {
+                        accumulatorArray.addAll((Collection<?>) newValue);
+                    } else {
+                        accumulatorArray.add(newValue);
+                    }
+                }
+                return; //important: if the element we want to apply is an array we skip to the next
             }
         }
 
         if(toApply && ctx.index <= toApplyNextIndex) {
-            if(!(valueObj instanceof Collection<?>)) {
+            System.out.println("trying to apply");
+
+            if(!(valueObj instanceof Collection<?>)) { //TODO this makes it fail when it's to copy full array to another inside the element. THIS is becase we dont count array as a path, only the item
                 if(targetPathList.get(0).equals("..")) {
                     toApplyNextIndex = ctx.index - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
@@ -43,9 +56,9 @@ public class CopyTo extends AbstractTransformer {
 
     private void createPath(Object valueObj) {
         if (valueObj instanceof Map<?, ?> map) {
-            while(targetPathList.size() != 1) {
-                Object pathElement = targetPathList.get(0);
+            String pathElement = targetPathList.get(0);
 
+            while(targetPathList.size() != 1) {
                 if(map.get(pathElement) == null) {
                     ((Map<String,Object>)map).put(targetPathList.get(0), new HashMap<String, Object>());
                 }
@@ -54,7 +67,13 @@ public class CopyTo extends AbstractTransformer {
                 targetPathList = targetPathList.subList(1, targetPathList.size());
             }
 
-            ((Map<String,Object>)map).put(targetPathList.get(0), newValue);
+            if(!accumulatorArray.isEmpty()) {
+                ArrayList<Object> array = ((Map<String, ArrayList<Object>>) map).get(pathElement);
+                array.addAll(accumulatorArray);
+            } else {
+                ((Map<String,Object>)map).put(targetPathList.get(0), newValue);
+            }
+
             resetTransformer();
         }
     }

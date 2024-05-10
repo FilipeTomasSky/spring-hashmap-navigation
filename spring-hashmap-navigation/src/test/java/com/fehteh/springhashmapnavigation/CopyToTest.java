@@ -40,8 +40,8 @@ class CopyToTest {
 		Map<String, Object> productCount = (Map<String, Object>) metadata.get("productCount");
 		Map<String, Object> newField = (Map<String, Object>) productCount.get("newField");
 
-		boolean field = (boolean) newField.get("field");
-		assertTrue(field);
+		int field = (Integer) newField.get("field");
+		assertEquals(2,field);
 	}
 
 	@Test
@@ -72,15 +72,60 @@ class CopyToTest {
 		ArrayList<Map<String, Object>> offers2 = (ArrayList<Map<String, Object>>) relevantContext2.get("offers");
 		assertNull(offers2);
 
+		// product 1 has newOffers
 		ArrayList<Map<String, Object>> newOffers = (ArrayList<Map<String, Object>>) relevantContext.get("newOffers");
-		Map<String, Object> staticId = (Map<String, Object>) newOffers.get(0).get("staticId");
+		String staticId = (String) newOffers.get(0).get("staticId");
 		assertEquals("D2C_OFFER_MONTH", staticId);
 
+		// product 2 has newOffers
 		ArrayList<Map<String, Object>> newOffers1 = (ArrayList<Map<String, Object>>) relevantContext1.get("newOffers");
-		Map<String, Object> staticId1 = (Map<String, Object>) newOffers1.get(0).get("staticId");
+		String staticId1 = (String) newOffers1.get(0).get("staticId");
 		assertEquals("D2C_OFFER_MONTH", staticId1);
-		Map<String, Object> staticId1_1 = (Map<String, Object>) newOffers1.get(1).get("staticId");
+
+		// product 3 has no newOffers
+		String staticId1_1 = (String) newOffers1.get(1).get("staticId");
 		assertEquals("D2C_OFFER_DAY_2", staticId1_1);
+
+		ArrayList<Map<String, Object>> newOffers2 = (ArrayList<Map<String, Object>>) relevantContext2.get("newOffers");
+		assertNull(newOffers2);
+
+	}
+
+	@Test
+	void copyToBubbleUpArrayAppendingInExistingArray() {
+		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
+
+		NavigationService navigationService = new NavigationService();
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.offers", new CopyTo("../../../allOffers"));
+
+		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
+		assertNotNull(metadata);
+
+		ArrayList<Map<String, Object>> products = (ArrayList<Map<String, Object>>) metadata.get("products");
+
+		Map<String, Object> relevantContext = (Map<String, Object>) products.get(0).get("relevantContext");
+		Map<String, Object> relevantContext1 = (Map<String, Object>) products.get(1).get("relevantContext");
+		Map<String, Object> relevantContext2 = (Map<String, Object>) products.get(2).get("relevantContext");
+
+		String duration = (String) relevantContext.get("duration");
+		assertNotNull(duration); // check if didn't overwrite
+
+		ArrayList<Map<String, Object>> offers = (ArrayList<Map<String, Object>>) relevantContext.get("offers");
+		assertNotNull(offers);
+
+		ArrayList<Map<String, Object>> offers1 = (ArrayList<Map<String, Object>>) relevantContext1.get("offers");
+		assertNotNull(offers1);
+
+		ArrayList<Map<String, Object>> offers2 = (ArrayList<Map<String, Object>>) relevantContext2.get("offers");
+		assertNull(offers2);
+
+		ArrayList<Map<String, Object>> allOffers = (ArrayList<Map<String, Object>>) relevantContext.get("allOffers");
+		String staticId = (String) allOffers.get(0).get("staticId");
+		assertEquals("D2C_OFFER_MONTH", staticId);
+		String staticId1 = (String) allOffers.get(3).get("staticId");
+		assertEquals("D2C_OFFER_DAY_2", staticId1);
+
+		assertEquals(3, allOffers.size());
 
 		ArrayList<Map<String, Object>> newOffers2 = (ArrayList<Map<String, Object>>) relevantContext2.get("newOffers");
 		assertNull(newOffers2);

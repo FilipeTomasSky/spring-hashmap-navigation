@@ -26,9 +26,12 @@ public class NavigationService {
                 Object childrenObject = ((ArrayList<?>) arrayList).get(context.getArrayIndex());
                 navigateApplyAndNotify(childrenObject, context, transformer);
                 transformer.notify(context.getCurrentPath(), context, entryObject);
+                //if(context.getArrayIndex() >= arrayList.size()) {
+                //    context.setArrayIndex(-1);
+                //}
             }
+            //context.setArrayIndex(context.getArrayIndex() - 1); check this because arrayIndex is bigger than if should
             context.incIndex();
-            context.setArrayIndex(0);
         }
     }
 

@@ -40,8 +40,8 @@ public class SpringHashmapNavigationApplication {
 		relevantContext.put("offers", offers);
 		offers.add(offer);
 		offer.put("staticId","D2C_OFFER_MONTH");
-		offer = new HashMap<String, Object>();
-		offers.add(offer);
+		//offer = new HashMap<String, Object>();
+		//offers.add(offer);
 		//offer.put("staticId","D2C_OFFER_DAY_1");
 
 		product = new HashMap<String, Object>();
@@ -75,6 +75,8 @@ public class SpringHashmapNavigationApplication {
 		relevantContext.put("nextRenewalDueDate", "2021-10-17T23:59:59+00:00");
 		relevantContext.put("duration", "P18M");
 
+		ArrayList<Map<String, Object>> allOffers = new ArrayList<Map<String, Object>>();
+		metadata.put("allOffers", allOffers);
 
 		return struct;
 	}

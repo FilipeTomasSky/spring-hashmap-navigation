@@ -65,9 +65,7 @@ class SetIfContainsTest {
 
 		ArrayList<Map<String, Object>> offers = (ArrayList<Map<String, Object>>) relevantContext.get("offers");
 		String staticId = (String) offers.get(0).get("staticId");
-		String staticId1 = (String) offers.get(1).get("staticId");
 		assertEquals("D2C_OFFER_MONTH", staticId);
-		assertNull(staticId1);
 
 		Map<String, Object> newField = (Map<String, Object>) relevantContext.get("newField");
 		Map<String, Object> newField1 = (Map<String, Object>) relevantContext1.get("newField");
