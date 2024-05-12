@@ -8,31 +8,24 @@ import java.util.Map;
 
 public class NavigationService {
 
-    public void navigateAndApplyRecursive(Map<String, Object> entryObj, String path, AbstractTransformer transformer) {
-        navigateAndApplyRecursive(new NavigationServiceContext(path, entryObj), transformer);
+    public void navigateAndApply(Map<String, Object> metadata, String path, AbstractTransformer transformer) {
+        navigateAndApplyRecursive(metadata, new NavigationServiceContext(path), transformer);
     }
 
-    private void navigateAndApplyRecursive(NavigationServiceContext context, AbstractTransformer transformer) {
-        Object entryObj = context.getValueObj();
-
-        if (entryObj instanceof Map<?, ?> map) {
+    private void navigateAndApplyRecursive(Object entryObject, NavigationServiceContext context, AbstractTransformer transformer) {
+        if (entryObject instanceof Map<?, ?> map) {
             String childrenName = context.getCurrentPath();
             Object childrenObject = map.get(childrenName);
-            context.setValueObj(childrenObject);
-            navigateApplyAndNotify(context, transformer);
+            runTransformer(childrenObject, context, transformer);
         }
 
-        if(entryObj instanceof Collection<?> arrayList) {
+        if(entryObject instanceof Collection<?> arrayList) {
             context.decIndex();
 
             for(context.setArrayIndex(0); context.getArrayIndex() < arrayList.size(); context.setArrayIndex(context.getArrayIndex() + 1)) {
                 Object childrenObject = ((ArrayList<?>) arrayList).get(context.getArrayIndex());
-
-                context.setValueObj(childrenObject);
-                navigateApplyAndNotify(context, transformer);
-
-                context.setValueObj(entryObj);
-                transformer.apply(context.getCurrentPath(), context);
+                runTransformer(childrenObject, context, transformer);
+                transformer.run(context.getCurrentPath(), context, entryObject);
             }
 
             context.setArrayIndex(context.getArrayIndex() - 1);
@@ -40,14 +33,15 @@ public class NavigationService {
         }
     }
 
-    private void navigateApplyAndNotify(NavigationServiceContext context, AbstractTransformer transformer) {
-        transformer.apply(context.getCurrentPath(), context);
+    private void runTransformer(Object childrenObject, NavigationServiceContext context, AbstractTransformer transformer) {
+        transformer.run(context.getCurrentPath(), context, childrenObject);
 
         if(!context.isLastElement()) {
             context.incIndex();
-            navigateAndApplyRecursive(context, transformer);
+            navigateAndApplyRecursive(childrenObject, context, transformer);
+
             context.decIndex();
-            transformer.apply(context.getCurrentPath(), context);
+            transformer.run(context.getCurrentPath(), context, childrenObject);
         }
     }
 }

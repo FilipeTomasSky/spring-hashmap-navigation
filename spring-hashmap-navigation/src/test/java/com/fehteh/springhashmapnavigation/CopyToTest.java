@@ -15,7 +15,7 @@ class CopyToTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.productCount.count", new CopyTo("../../newField"));
+		navigationService.navigateAndApply(struct, "metadata.productCount.count", new CopyTo("../../newField"));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -32,7 +32,7 @@ class CopyToTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.productCount", new CopyTo("../newField"));
+		navigationService.navigateAndApply(struct, "metadata.productCount", new CopyTo("../newField"));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -50,7 +50,7 @@ class CopyToTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.productCount.count", new CopyTo("../newField/field"));
+		navigationService.navigateAndApply(struct, "metadata.productCount.count", new CopyTo("../newField/field"));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -67,7 +67,7 @@ class CopyToTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.products.relevantContext.offers", new CopyTo("../../../newOffers"));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.offers", new CopyTo("../../../newOffers"));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -115,7 +115,7 @@ class CopyToTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.products.relevantContext.offers", new CopyTo("../../relevantContext/newOffers"));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.offers", new CopyTo("../../relevantContext/newOffers"));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);

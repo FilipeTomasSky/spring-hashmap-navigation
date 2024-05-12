@@ -23,32 +23,28 @@ public class SetIfContains extends AbstractTransformer {
     }
 
     @Override
-    public void applyTransformer(String navigationElement, NavigationServiceContext ctx) {
-        Object valueObj = ctx.getValueObj();
-        int index = ctx.getIndex();
-        
+    public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
         if(!toApply && ctx.isLastElement()) {
             if(valueObj != null && (valueObj.toString()).contains(comparableValue)) {
                 toApply = true;
-                toApplyNextIndex = index;
+                toApplyNextIndex = ctx.index;
             }
         }
 
-        if(toApply && index <= toApplyNextIndex) {
-            if(!(ctx.isValueObjTypeCollection())) {
+        if(toApply && ctx.index <= toApplyNextIndex) {
+            if(!(valueObj instanceof Collection<?>)) {
                 if(targetPathList.get(0).equals("..")) {
-                    toApplyNextIndex = index - 1;
+                    toApplyNextIndex = ctx.index - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
-                    createPath(ctx);
+                    createPath(valueObj);
                 }
             }
         }
     }
 
-    private void createPath(NavigationServiceContext ctx) {
-        if (ctx.isValueObjTypeMap()) {
-            Map<?, ?> map = (Map<?, ?>) ctx.getValueObj();
+    private void createPath(Object valueObj) {
+        if (valueObj instanceof Map<?, ?> map) {
             while(targetPathList.size() != 1) {
                 Object pathElement = targetPathList.get(0);
 

@@ -2,6 +2,7 @@ package com.fehteh.springhashmapnavigation;
 
 import com.fehteh.springhashmapnavigation.navigation.NavigationService;
 import com.fehteh.springhashmapnavigation.transformer.SetIfMissing;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ class SetIfMissingTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.productCount.missing", new SetIfMissing("../../newField", true));
+		navigationService.navigateAndApply(struct, "metadata.productCount.missing", new SetIfMissing("../../newField", true));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -29,7 +30,7 @@ class SetIfMissingTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.missing", new SetIfMissing("newField/newField1", true));
+		navigationService.navigateAndApply(struct, "metadata.missing", new SetIfMissing("newField/newField1", true));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -45,7 +46,7 @@ class SetIfMissingTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.productCount.missing", new SetIfMissing("../../newField/newField1", true));
+		navigationService.navigateAndApply(struct, "metadata.productCount.missing", new SetIfMissing("../../newField/newField1", true));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -61,7 +62,7 @@ class SetIfMissingTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.products.relevantContext.offers.missing", new SetIfMissing("../../../relevantContext/newField/missing", true));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.offers.missing", new SetIfMissing("../../../relevantContext/newField/missing", true));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -89,7 +90,7 @@ class SetIfMissingTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.products.relevantContext.isIncluded", new SetIfMissing("../newField", true));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.isIncluded", new SetIfMissing("../newField", true));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -111,7 +112,7 @@ class SetIfMissingTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.products.relevantContext.isIncluded", new SetIfMissing("../../../newField", true));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.isIncluded", new SetIfMissing("../../../newField", true));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -125,7 +126,7 @@ class SetIfMissingTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.products.relevantContext.missing", new SetIfMissing("../newField", "yes"));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.missing", new SetIfMissing("../newField", "yes"));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -147,7 +148,7 @@ class SetIfMissingTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.products.relevantContext.missing", new SetIfMissing("../newField/missing", "yes"));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.missing", new SetIfMissing("../newField/missing", "yes"));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -173,7 +174,8 @@ class SetIfMissingTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.products.relevantContext.offers", new SetIfMissing("../newField", true));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.offers.staticId", new SetIfMissing("../newField", true));
+		//TODO cant it be targetPath "../../newField" because even offers that exists in product 2
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);

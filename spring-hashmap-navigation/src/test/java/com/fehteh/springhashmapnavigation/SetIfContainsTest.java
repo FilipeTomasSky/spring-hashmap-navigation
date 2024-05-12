@@ -15,7 +15,7 @@ class SetIfContainsTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.productCount.count", new SetIfContains("../../newField", 2, true));
+		navigationService.navigateAndApply(struct, "metadata.productCount.count", new SetIfContains("../../newField", 2, true));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -33,7 +33,7 @@ class SetIfContainsTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.productCount.count", new SetIfContains("../newField/field", 2, true));
+		navigationService.navigateAndApply(struct, "metadata.productCount.count", new SetIfContains("../newField/field", 2, true));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
@@ -50,7 +50,7 @@ class SetIfContainsTest {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
 		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApplyRecursive(struct, "metadata.products.relevantContext.offers.staticId", new SetIfContains("../../../relevantContext/newField/D2C_OFFER_MONTH", "D2C_OFFER_MONTH",true));
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.offers.staticId", new SetIfContains("../../../relevantContext/newField/D2C_OFFER_MONTH", "D2C_OFFER_MONTH",true));
 
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
