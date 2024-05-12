@@ -21,28 +21,33 @@ public class SetIfMissing extends AbstractTransformer {
 
 
     @Override
-    public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
-        //if(!toApply && ctx.isLastElement()) { //TODO because some elements in the path before reaching the end can not exists
+    public void applyTransformer(String navigationElement, NavigationServiceContext ctx) {
+        Object valueObj = ctx.getValueObj();
+        int index = ctx.getIndex();
+
+        if(!toApply && ctx.isLastElement()) {
             if(!toApply && valueObj == null) {
                 toApply = true;
-                toApplyNextIndex = ctx.index;
+                toApplyNextIndex = index;
             }
-        //}
+        }
 
-        if(toApply && ctx.index <= toApplyNextIndex) {
-            if(!(valueObj instanceof Collection<?>)) {
+        if(toApply && index <= toApplyNextIndex) {
+            if(!(ctx.isValueObjTypeCollection())) {
                 if(targetPathList.get(0).equals("..")) {
-                    toApplyNextIndex = ctx.index - 1;
+                    toApplyNextIndex = index - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
-                    createPath(valueObj);
+                    createPath(ctx);
                 }
             }
         }
     }
 
-    private void createPath(Object valueObj) {
-        if (valueObj instanceof Map<?, ?> map) {
+    private void createPath(NavigationServiceContext ctx) {
+        if (ctx.isValueObjTypeMap()) {
+            Map<?, ?> map = (Map<?, ?>) ctx.getValueObj();
+
             while(targetPathList.size() != 1) {
                 Object pathElement = targetPathList.get(0);
 

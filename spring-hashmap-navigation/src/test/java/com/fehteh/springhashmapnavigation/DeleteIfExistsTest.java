@@ -20,7 +20,7 @@ public class DeleteIfExistsTest {
         Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 
         assertNotNull(metadata.get("productCount"));
-        navigationService.navigateAndApply(struct, "metadata.productCount.count", new DeleteIfExists("../../productCount"));
+        navigationService.navigateAndApplyRecursive(struct, "metadata.productCount.count", new DeleteIfExists("../../productCount"));
         assertNull(metadata.get("productCount"));
     }
 
@@ -29,7 +29,7 @@ public class DeleteIfExistsTest {
         Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
         NavigationService navigationService = new NavigationService();
-        navigationService.navigateAndApply(struct, "metadata.products.relevantContext.isIncluded", new DeleteIfExists("../../relevantContext"));
+        navigationService.navigateAndApplyRecursive(struct, "metadata.products.relevantContext.isIncluded", new DeleteIfExists("../../relevantContext"));
 
         Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
         ArrayList<Map<String, Object>> products = (ArrayList<Map<String, Object>>) metadata.get("products");
@@ -50,7 +50,7 @@ public class DeleteIfExistsTest {
 
         Assertions.assertEquals(3, products.size());
 
-        navigationService.navigateAndApply(struct, "metadata.products.relevantContext.isIncluded", new DeleteIfExists("../../../products"));
+        navigationService.navigateAndApplyRecursive(struct, "metadata.products.relevantContext.isIncluded", new DeleteIfExists("../../../products"));
 
         Assertions.assertEquals(2, products.size());
 

@@ -91,7 +91,7 @@ public class SpringHashmapNavigationApplication {
 		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.coco", new SetIfMissing("../../batatas", true));
 		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.isIncluded", new DeleteIfExists("../../relevantContext"));
 		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.isIncluded", new DeleteIfExists("../../../products"));
-		navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new DeleteIfExists("../../offers"));
+		navigationService.navigateAndApplyRecursive(metadata, "metadata.products.relevantContext.offers.staticId", new DeleteIfExists("../../offers"));
 		//navigationService.navigateAndApply(metadata, "metadata.products.relevantContext.offers.staticId", new DeleteIfExists("../../../relevantContext"));
 
 		var a = metadata;

@@ -23,28 +23,32 @@ public class SetIfContains extends AbstractTransformer {
     }
 
     @Override
-    public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
+    public void applyTransformer(String navigationElement, NavigationServiceContext ctx) {
+        Object valueObj = ctx.getValueObj();
+        int index = ctx.getIndex();
+        
         if(!toApply && ctx.isLastElement()) {
             if(valueObj != null && (valueObj.toString()).contains(comparableValue)) {
                 toApply = true;
-                toApplyNextIndex = ctx.index;
+                toApplyNextIndex = index;
             }
         }
 
-        if(toApply && ctx.index <= toApplyNextIndex) {
-            if(!(valueObj instanceof Collection<?>)) {
+        if(toApply && index <= toApplyNextIndex) {
+            if(!(ctx.isValueObjTypeCollection())) {
                 if(targetPathList.get(0).equals("..")) {
-                    toApplyNextIndex = ctx.index - 1;
+                    toApplyNextIndex = index - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
-                    createPath(valueObj);
+                    createPath(ctx);
                 }
             }
         }
     }
 
-    private void createPath(Object valueObj) {
-        if (valueObj instanceof Map<?, ?> map) {
+    private void createPath(NavigationServiceContext ctx) {
+        if (ctx.isValueObjTypeMap()) {
+            Map<?, ?> map = (Map<?, ?>) ctx.getValueObj();
             while(targetPathList.size() != 1) {
                 Object pathElement = targetPathList.get(0);
 
@@ -61,7 +65,7 @@ public class SetIfContains extends AbstractTransformer {
         }
     }
 
-    private void resetTransformer() { //TODO abstract
+    private void resetTransformer() {
         this.toApply = false;
         this.toApplyNextIndex = 0;
         this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));

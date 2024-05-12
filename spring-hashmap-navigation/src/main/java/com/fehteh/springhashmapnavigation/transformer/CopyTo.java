@@ -22,15 +22,18 @@ public class CopyTo extends AbstractTransformer {
     }
 
     @Override
-    public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
-        if(!toApply && ctx.isLastElement() || ctx.isLastElement() && valueObj instanceof Collection<?>) {
+    public void applyTransformer(String navigationElement, NavigationServiceContext ctx) {
+        Object valueObj = ctx.getValueObj();
+        int index = ctx.getIndex();
+        
+        if(!toApply && ctx.isLastElement() || ctx.isLastElement() && ctx.isValueObjTypeCollection()) {
             if(valueObj != null) {
                 toApply = true;
-                toApplyNextIndex = ctx.index;
+                toApplyNextIndex = index;
                 newValue = valueObj;
                 this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
 
-                if(valueObj instanceof Collection<?>) {
+                if(ctx.isValueObjTypeCollection()) {
                     if(newValue instanceof Collection<?>) {
                         accumulatorArray.addAll((Collection<?>) newValue);
                     } else {
@@ -40,22 +43,23 @@ public class CopyTo extends AbstractTransformer {
             }
         }
 
-        if(toApply && ctx.index <= toApplyNextIndex) {
+        if(toApply && index <= toApplyNextIndex) {
             System.out.println("trying to apply");
 
-            if(ctx.isLastElement() || !(valueObj instanceof Collection<?>)) {
+            if(ctx.isLastElement() || !ctx.isValueObjTypeCollection()) {
                 if(targetPathList.get(0).equals("..")) {
-                    toApplyNextIndex = ctx.index - 1;
+                    toApplyNextIndex = index - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
-                    createPath(valueObj);
+                    createPath(ctx);
                 }
             }
         }
     }
 
-    private void createPath(Object valueObj) {
-        if (valueObj instanceof Map<?, ?> map) {
+    private void createPath(NavigationServiceContext ctx) {
+        if (ctx.isValueObjTypeMap()) {
+            Map<?, ?> map = (Map<?, ?>) ctx.getValueObj();;
             String pathElement = targetPathList.get(0);
 
             while(targetPathList.size() != 1) {
@@ -83,7 +87,7 @@ public class CopyTo extends AbstractTransformer {
         }
     }
 
-    private void resetTransformer() { //TODO abstract
+    private void resetTransformer() {
         this.toApply = false;
         this.toApplyNextIndex = 0;
         this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
