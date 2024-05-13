@@ -20,6 +20,9 @@ public class SpringHashmapNavigationApplication {
 		Map<String,Object> productCount = new HashMap<String, Object>();
 		productCount.put("count", 2);
 		metadata.put("productCount", productCount);
+		Map<String,Object> productName = new HashMap<>();
+		metadata.put("productName", productName);
+		productName.put("name", "subscriptionName");
 
 		ArrayList<Map<String, Object>> products = new ArrayList<Map<String, Object>>();
 		Map<String,Object> product = new HashMap<String, Object>();
@@ -68,7 +71,7 @@ public class SpringHashmapNavigationApplication {
 		products.add(product);
 		product.put("category","D2B");
 		product.put("quantity",1);
-		product.put("staticId","D2B_SUBSCRIPTION_MONTH");
+		product.put("staticId","D2B_SUBSCRIPTION_YEAR");
 		product.put("id",33333);
 		relevantContext = new HashMap<String, Object>();
 		product.put("relevantContext", relevantContext);

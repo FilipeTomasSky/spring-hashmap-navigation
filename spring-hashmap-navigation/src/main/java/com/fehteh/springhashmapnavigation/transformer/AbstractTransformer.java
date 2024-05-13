@@ -18,5 +18,5 @@ public abstract class AbstractTransformer {
         System.out.println("AbstractTransformer: " + ctx.getCurrentFullpath() + " [key:" + ctx.getCurrentPath() + "]" + " [valueObj:" + valueClass + "]" + " [index:" + index + "]" + " [arrayIndex:" + arrayIndex + "]" + " [lastElement:" + lastElement + "]");
     }
 
-    abstract void runTransformer(String navigationElement, NavigationServiceContext ctx, Object value);
+    abstract void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj);
 }

@@ -31,11 +31,7 @@ public class CopyTo extends AbstractTransformer {
                 this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
 
                 if(valueObj instanceof Collection<?>) {
-                    if(newValue instanceof Collection<?>) {
-                        accumulatorArray.addAll((Collection<?>) newValue);
-                    } else {
-                        accumulatorArray.add(newValue);
-                    }
+                    accumulatorArray.addAll((Collection<?>)newValue);
                 }
             }
         }
