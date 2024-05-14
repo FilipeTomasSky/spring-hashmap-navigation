@@ -23,14 +23,14 @@ public class CopyTo extends AbstractTransformer {
 
     @Override
     public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
-        if(!toApply && ctx.isLastElement() || ctx.isLastElement() && valueObj instanceof Collection<?>) {
+        if(!toApply && ctx.isLastElement() || ctx.isLastElement() && isObjValueCollectionType()) {
             if(valueObj != null) {
                 toApply = true;
                 toApplyNextIndex = ctx.index;
                 newValue = valueObj;
                 this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
 
-                if(valueObj instanceof Collection<?>) {
+                if(isObjValueCollectionType()) {
                     accumulatorArray.addAll((Collection<?>)newValue);
                 }
             }
@@ -39,7 +39,7 @@ public class CopyTo extends AbstractTransformer {
         if(toApply && ctx.index <= toApplyNextIndex) {
             System.out.println("trying to apply");
 
-            if(ctx.isLastElement() || !(valueObj instanceof Collection<?>)) {
+            if(ctx.isLastElement() || !(isObjValueCollectionType())) {
                 if(targetPathList.get(0).equals("..")) {
                     toApplyNextIndex = ctx.index - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
@@ -51,15 +51,16 @@ public class CopyTo extends AbstractTransformer {
     }
 
     private void createPath(Object valueObj) {
-        if (valueObj instanceof Map<?, ?> map) {
+        if (isObjValueMapType()) {
             String pathElement = targetPathList.get(0);
+            Map<?,?> map = (Map<?, ?>) valueObj;
 
             while(targetPathList.size() != 1) {
                 if(map.get(pathElement) == null) {
-                    ((Map<String,Object>)map).put(targetPathList.get(0), new HashMap<String, Object>());
+                    ((Map<String, Object>)map).put(targetPathList.get(0), new HashMap<String, Object>());
                 }
 
-                map = (Map<?, ?>)map.get(pathElement);
+                map = (Map<String, Object>) map.get(pathElement);
                 targetPathList = targetPathList.subList(1, targetPathList.size());
             }
 

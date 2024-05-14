@@ -27,7 +27,7 @@ public class SetIfMissing extends AbstractTransformer {
         }
 
         if(toApply && ctx.index <= toApplyNextIndex) {
-            if(!(valueObj instanceof Collection<?>)) {
+            if(!(isObjValueCollectionType())) {
                 if(targetPathList.get(0).equals("..")) {
                     toApplyNextIndex = ctx.index - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
@@ -39,7 +39,9 @@ public class SetIfMissing extends AbstractTransformer {
     }
 
     private void createPath(Object valueObj) {
-        if (valueObj instanceof Map<?, ?> map) {
+        if (isObjValueMapType()) {
+            Map<?,?> map = (Map<?, ?>) valueObj;
+
             while(targetPathList.size() != 1) {
                 Object pathElement = targetPathList.get(0);
 

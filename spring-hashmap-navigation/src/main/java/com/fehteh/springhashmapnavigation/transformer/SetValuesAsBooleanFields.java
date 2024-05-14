@@ -30,7 +30,7 @@ public class SetValuesAsBooleanFields extends AbstractTransformer {
         }
 
         if(toApply && ctx.index <= toApplyNextIndex) {
-            if(valueObj instanceof Collection<?>) {
+            if(isObjValueCollectionType()) {
                 return;
             }
 
@@ -66,7 +66,8 @@ public class SetValuesAsBooleanFields extends AbstractTransformer {
     }
 
     private void createPath(Object valueObj) {
-        if(valueObj instanceof Map<?, ?> map) {
+        if(isObjValueMapType()) {
+            Map<?,?> map = (Map<?, ?>) valueObj;
             while(targetPathList.size() != 0) {
                 Object pathElement = targetPathList.get(0);
 

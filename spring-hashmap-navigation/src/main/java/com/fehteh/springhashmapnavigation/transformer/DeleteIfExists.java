@@ -5,7 +5,6 @@ import com.fehteh.springhashmapnavigation.navigation.NavigationServiceContext;
 import java.util.*;
 
 public class DeleteIfExists extends AbstractTransformer {
-
     private String targetPath;
 
     private List<String> targetPathList;
@@ -26,19 +25,20 @@ public class DeleteIfExists extends AbstractTransformer {
                 toApplyNextIndex = ctx.index;
             }
         }
-        if(toApply && (ctx.index <= toApplyNextIndex || valueObj instanceof Collection<?>)) {
-            if(!targetPathList.get(0).equals("..")) {
-                if (valueObj instanceof Map<?, ?> map) {
 
+        if(toApply && (ctx.index <= toApplyNextIndex || isObjValueCollectionType())) {
+            if(!targetPathList.get(0).equals("..")) {
+                if (isObjValueMapType()) {
+                    Map<?,?> map = (Map<?, ?>) valueObj;
                     ((Map<String,Object>)map).remove(targetPathList.get(0));
                 }
-                if(valueObj instanceof Collection<?> arrayList) {
-
-                    ((ArrayList) arrayList).remove(ctx.getArrayIndex());
+                if(isObjValueCollectionType()) {
+                    ArrayList<String> arrayObj = (ArrayList<String>) valueObj;
+                    arrayObj.remove(ctx.getArrayIndex());
                     ctx.setArrayIndex(ctx.getArrayIndex() - 1);
                 }
                 resetTransformer();
-            } else if(!(valueObj instanceof Collection<?>)) {
+            } else if(!(isObjValueCollectionType())) {
                 toApplyNextIndex = ctx.index - 1;
 
                 if (targetPathList.get(0).equals("..")) {
