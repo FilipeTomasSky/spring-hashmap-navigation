@@ -5,13 +5,8 @@ import com.fehteh.springhashmapnavigation.navigation.NavigationServiceContext;
 import java.util.*;
 
 public class SetValuesAsBooleanFields extends AbstractTransformer {
-
-    private final String targetPath;
     private final Object newValue;
     private List<String> newFieldNames = new ArrayList<>();
-    private List<String> targetPathList;
-    private int toApplyNextIndex;
-    private boolean toApply;
 
     public SetValuesAsBooleanFields(String targetPath, Object newValue) {
         this.targetPath = targetPath;
@@ -19,14 +14,15 @@ public class SetValuesAsBooleanFields extends AbstractTransformer {
 
         resetTransformer();
     }
+
     @Override
-    void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
-        if(ctx.isLastElement() && valueObj instanceof String valueStr) {
+    void runTransformer(String navigationElement, NavigationServiceContext ctx) {
+        if(ctx.isLastElement() && isObjValueStringType()) {
             if(!toApply) {
                 toApply = true;
                 toApplyNextIndex = ctx.index;
             }
-            newFieldNames.add(formatToCamelCase(valueStr));
+            newFieldNames.add(formatToCamelCase((String) getValueObj()));
         }
 
         if(toApply && ctx.index <= toApplyNextIndex) {
@@ -35,16 +31,28 @@ public class SetValuesAsBooleanFields extends AbstractTransformer {
             }
 
             if(targetPathList.size() == 0) {
-                createPath(valueObj);
+                putValue(null, newValue, false);
+                resetTransformer();
             } else {
                 if(targetPathList.get(0).equals("..")) {
                     toApplyNextIndex = ctx.index - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
-                    createPath(valueObj);
+                    if(createPath(targetPathList, targetPathList.size())) {
+                        putValue(null, newValue, false);
+                        resetTransformer();
+                    }
                 }
             }
         }
+    }
+
+    @Override
+    boolean putValue(String fieldName, Object newValue, boolean overrideField) {
+        for (String field : newFieldNames) {
+            super.putValue(field, newValue, false);
+        }
+        return false;
     }
 
     public static String formatToCamelCase(String input) {
@@ -63,35 +71,5 @@ public class SetValuesAsBooleanFields extends AbstractTransformer {
         }
 
         return formattedString.toString();
-    }
-
-    private void createPath(Object valueObj) {
-        if(isObjValueMapType()) {
-            Map<?,?> map = (Map<?, ?>) valueObj;
-            while(targetPathList.size() != 0) {
-                Object pathElement = targetPathList.get(0);
-
-                if(map.get(pathElement) == null) {
-                    ((Map<String,Object>)map).put(targetPathList.get(0), new HashMap<String, Object>());
-                }
-
-                map = (Map<?, ?>)map.get(pathElement);
-                targetPathList = targetPathList.subList(1, targetPathList.size());
-            }
-
-            for (String fieldName : newFieldNames) {
-                if(map.get(fieldName) == null) {
-                    ((Map<String,Object>)map).put(fieldName, newValue);
-                }
-            }
-
-            resetTransformer();
-        }
-    }
-
-    private void resetTransformer() {
-        this.toApply = false;
-        this.toApplyNextIndex = 0;
-        this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
     }
 }

@@ -5,12 +5,7 @@ import com.fehteh.springhashmapnavigation.navigation.NavigationServiceContext;
 import java.util.*;
 
 public class CopyTo extends AbstractTransformer {
-    private final String targetPath;
     private Object newValue;
-
-    private List<String> targetPathList;
-    private boolean toApply;
-    private int toApplyNextIndex;
 
     private List<Object> accumulatorArray = new ArrayList<>();
 
@@ -22,12 +17,12 @@ public class CopyTo extends AbstractTransformer {
     }
 
     @Override
-    public void runTransformer(String navigationElement, NavigationServiceContext ctx, Object valueObj) {
+    void runTransformer(String navigationElement, NavigationServiceContext ctx) {
         if(!toApply && ctx.isLastElement() || ctx.isLastElement() && isObjValueCollectionType()) {
-            if(valueObj != null) {
+            if(getValueObj() != null) {
                 toApply = true;
                 toApplyNextIndex = ctx.index;
-                newValue = valueObj;
+                newValue = getValueObj();
                 this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
 
                 if(isObjValueCollectionType()) {
@@ -37,52 +32,37 @@ public class CopyTo extends AbstractTransformer {
         }
 
         if(toApply && ctx.index <= toApplyNextIndex) {
-            System.out.println("trying to apply");
-
             if(ctx.isLastElement() || !(isObjValueCollectionType())) {
                 if(targetPathList.get(0).equals("..")) {
                     toApplyNextIndex = ctx.index - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
-                    createPath(valueObj);
+                    if(createPath(targetPathList, targetPathList.size()-1)) {
+                        putValue(targetPathList.get(targetPathList.size()-1), newValue, true);
+                        resetTransformer();
+                    }
                 }
             }
         }
     }
 
-    private void createPath(Object valueObj) {
-        if (isObjValueMapType()) {
-            String pathElement = targetPathList.get(0);
-            Map<?,?> map = (Map<?, ?>) valueObj;
+    @Override
+    boolean putValue(String fieldName, Object newValue, boolean overrideField) {
+        Map<?,?> map = (Map<?, ?>) getValueObj();
 
-            while(targetPathList.size() != 1) {
-                if(map.get(pathElement) == null) {
-                    ((Map<String, Object>)map).put(targetPathList.get(0), new HashMap<String, Object>());
-                }
+        if(!accumulatorArray.isEmpty()) {
+            ArrayList<Object> array = ((Map<String, ArrayList<Object>>) map).get(fieldName);
 
-                map = (Map<String, Object>) map.get(pathElement);
-                targetPathList = targetPathList.subList(1, targetPathList.size());
+            if(array == null) {
+                array = new ArrayList<>();
+                super.putValue(fieldName, array, overrideField);
             }
 
-            if(!accumulatorArray.isEmpty()) {
-                ArrayList<Object> array = ((Map<String, ArrayList<Object>>) map).get(pathElement);
-                if(array == null) {
-                    array = new ArrayList<>();
-                    ((Map<String, ArrayList<Object>>) map).put(targetPathList.get(0), array);
-                }
-                array.addAll(accumulatorArray);
-                accumulatorArray = new ArrayList<>();
-            } else {
-                ((Map<String,Object>)map).put(targetPathList.get(0), newValue);
-            }
-
-            resetTransformer();
+            array.addAll(accumulatorArray);
+            accumulatorArray = new ArrayList<>();
+            return true;
+        } else {
+            return super.putValue(fieldName, newValue, overrideField);
         }
-    }
-
-    private void resetTransformer() {
-        this.toApply = false;
-        this.toApplyNextIndex = 0;
-        this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
     }
 }
