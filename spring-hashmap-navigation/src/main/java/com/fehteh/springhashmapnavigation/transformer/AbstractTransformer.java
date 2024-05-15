@@ -20,7 +20,6 @@ public abstract class AbstractTransformer {
         print(ctx);
         checkValueObjClassType();
 
-        //runTransformer(navigationElement, ctx, valueObj);
         runTransformer(navigationElement, ctx);
     }
 
