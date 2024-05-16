@@ -8,10 +8,34 @@ public abstract class AbstractTransformer {
     private boolean isMapType;
     private boolean isCollectionType;
     private boolean isStringType;
+
     private Object valueObj;
 
+    /**
+     * {@code targetPath} - String Path in which the Transformer can navigate to. Element's path are separated by / and
+     * .. to move back (move up one level).
+     * Can add new levels to the path.
+     * The format String must be relative to the {@code path} from NavigationService
+     *
+     * @Example
+     *
+     * To move to the path "metadata.products"
+     *<pre>{@code
+     * path = "metadata.products.relevantContext.offers"
+     * targetPath = "../.."
+     *}</pre>
+     *
+     * To move to the path "metadata.product.name.id" creating the path "name.id" that doesn't exist
+     *<pre>{@code
+     * path = "metadata.product"
+     * targetPath = "name/id"
+     *}</pre>
+     *
+     *
+     */
     String targetPath;
     List<String> targetPathList;
+
     boolean toApply;
     int toApplyNextIndex;
 
@@ -21,6 +45,109 @@ public abstract class AbstractTransformer {
         checkValueObjClassType();
 
         runTransformer(navigationElement, ctx);
+    }
+
+    /**
+     * Checks actions and/or conditions to apply for the current valueObj.
+     * It can navigate the valueObj by updating the NavigationServiceContext.
+     *
+     * @param navigationElement Current navigation element
+     * @param ctx NavigationServiceContext that allows to have a navigation in the valueObj
+     */
+    abstract void runTransformer(String navigationElement, NavigationServiceContext ctx);
+
+    /**
+     * Creates a path for the current valueObj. The valueObj is set with the path inserted accordingly.
+     * If a path element already exists, it won't create/override it, it will move forward to check the rest of the path elements
+     *
+     * @param targetPathList List with the path elements
+     * @param nrOfElements Number of path elements. If nrOfElements = 3 and targetPathList has 5 elements, it will insert
+     * @return {@code true} if base valueObj is a Map, {@code false} otherwise
+     */
+    protected boolean createPath(List<String> targetPathList, int nrOfElements) {
+        if(isObjValueMapType()) {
+            Map<?,?> map = (Map<?, ?>) valueObj;
+            int limit = targetPathList.size() - nrOfElements;
+
+            while(targetPathList.size() != limit) {
+                String pathElement = targetPathList.get(0);
+
+                if(map.get(pathElement) == null) {
+                    ((Map<String,Object>)map).put(pathElement, new HashMap<String, Object>());
+                }
+
+                map = (Map<?, ?>)map.get(pathElement);
+                targetPathList = targetPathList.subList(1, targetPathList.size());
+            }
+
+            valueObj = map;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Puts a value in the current valueObj if valueObj for a given field. It can either override the field or not if the field already exists.
+     *
+     * @param fieldName The name of the field (key) to insert
+     * @param newValue The value to insert for the given field
+     * @param overrideField true if field exists, and it's to be overridden or false otherwise
+     * @return {@code true} if base valueObj is a Map, {@code false} otherwise
+     */
+
+    protected boolean putValue(String fieldName, Object newValue, boolean overrideField) {
+        if(isObjValueMapType()) {
+            Map<?,?> map = (Map<?, ?>)valueObj;
+
+            if(!overrideField || map.get(fieldName) == null) {
+                ((Map<String,Object>) map).put(fieldName, newValue);
+            }
+
+            valueObj = map;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Resets {@code toApply}, {@code toApplyNextIndex}, {@code targetPathList}
+     */
+    void resetTransformer() {
+        this.toApply = false;
+        this.toApplyNextIndex = 0;
+        this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
+    }
+
+
+    /**
+     * Checks if the objValue is instance of Map<?,?>
+     *
+     * @return  {@code true} if valueObj is Map, {@code false} otherwise.
+     */
+    public boolean isObjValueMapType() {
+        return isMapType;
+    }
+
+    /**
+     * Checks if the objValue is instance of Collection<?>
+     *
+     * @return  {@code true} if objValue is Collection, {@code false} otherwise.
+     */
+    public boolean isObjValueCollectionType() {
+        return isCollectionType;
+    }
+
+    /**
+     * Checks if the objValue is instance of String
+     *
+     * @return  {@code true} if objValue is String, {@code false} otherwise.
+     */
+    public boolean isObjValueStringType() {
+        return isStringType;
+    }
+
+    public Object getValueObj() {
+        return valueObj;
     }
 
     private void checkValueObjClassType() {
@@ -50,65 +177,5 @@ public abstract class AbstractTransformer {
         String valueClass = valueObj != null ? valueObj.getClass().getSimpleName() : "null";
 
         System.out.println("AbstractTransformer: " + ctx.getCurrentFullpath() + " [key:" + ctx.getCurrentPath() + "]" + " [valueObj:" + valueClass + "]" + " [index:" + index + "]" + " [arrayIndex:" + arrayIndex + "]" + " [lastElement:" + lastElement + "]");
-    }
-
-    public boolean createPath(List<String> targetPathList, int nrOfElements) {
-        if(isObjValueMapType()) {
-            Map<?,?> map = (Map<?, ?>) valueObj;
-            int limit = targetPathList.size() - nrOfElements;
-
-            while(targetPathList.size() != limit) {
-                String pathElement = targetPathList.get(0);
-
-                if(map.get(pathElement) == null) {
-                    ((Map<String,Object>)map).put(pathElement, new HashMap<String, Object>());
-                }
-
-                map = (Map<?, ?>)map.get(pathElement);
-                targetPathList = targetPathList.subList(1, targetPathList.size());
-            }
-
-            valueObj = map;
-            return true;
-        }
-        return false;
-    }
-
-    boolean putValue(String fieldName, Object newValue, boolean overrideField) {
-        if(isObjValueMapType()) {
-            Map<?,?> map = (Map<?, ?>)valueObj;
-
-            if(!overrideField || map.get(fieldName) == null) {
-                ((Map<String,Object>) map).put(fieldName, newValue);
-            }
-
-            valueObj = map;
-            return true;
-        }
-        return false;
-    }
-
-    void resetTransformer() {
-        this.toApply = false;
-        this.toApplyNextIndex = 0;
-        this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
-    }
-
-    abstract void runTransformer(String navigationElement, NavigationServiceContext ctx);
-
-    public boolean isObjValueMapType() {
-        return isMapType;
-    }
-
-    public boolean isObjValueCollectionType() {
-        return isCollectionType;
-    }
-
-    public boolean isObjValueStringType() {
-        return isStringType;
-    }
-
-    public Object getValueObj() {
-        return valueObj;
     }
 }

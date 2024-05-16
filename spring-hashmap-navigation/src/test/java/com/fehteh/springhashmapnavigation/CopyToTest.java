@@ -3,7 +3,6 @@ package com.fehteh.springhashmapnavigation;
 import com.fehteh.springhashmapnavigation.navigation.NavigationService;
 import com.fehteh.springhashmapnavigation.transformer.CopyTo;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -66,9 +65,6 @@ class CopyToTest {
 	void copyToBubbleUpAccumulateArray() {
 		Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
 
-		NavigationService navigationService = new NavigationService();
-		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.offers", new CopyTo("../../../newOffers"));
-
 		Map<String, Object> metadata = (Map<String, Object>) struct.get("metadata");
 		assertNotNull(metadata);
 
@@ -93,6 +89,9 @@ class CopyToTest {
 		ArrayList<Map<String, Object>> offers2 = (ArrayList<Map<String, Object>>) relevantContext2.get("offers");
 		assertNull(offers2);
 
+		NavigationService navigationService = new NavigationService();
+		navigationService.navigateAndApply(struct, "metadata.products.relevantContext.offers", new CopyTo("../../../newOffers"));
+
 		ArrayList<Map<String, Object>> newOffers = (ArrayList<Map<String, Object>>) metadata.get("newOffers");
 
 		String staticId = (String) newOffers.get(0).get("staticId");
@@ -106,6 +105,7 @@ class CopyToTest {
 
 		assertEquals(3, newOffers.size());
 
+		// Verify it isn't copied to other places
 		ArrayList<Map<String, Object>> newOffers2 = (ArrayList<Map<String, Object>>) relevantContext2.get("newOffers");
 		assertNull(newOffers2);
 	}

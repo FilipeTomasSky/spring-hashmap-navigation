@@ -48,7 +48,7 @@ public class SetValuesAsBooleanFields extends AbstractTransformer {
     }
 
     @Override
-    boolean putValue(String fieldName, Object newValue, boolean overrideField) {
+    protected boolean putValue(String fieldName, Object newValue, boolean overrideField) {
         for (String field : newFieldNames) {
             super.putValue(field, newValue, false);
         }

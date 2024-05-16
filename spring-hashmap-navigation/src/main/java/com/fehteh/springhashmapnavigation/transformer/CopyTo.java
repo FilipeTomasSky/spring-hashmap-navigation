@@ -1,12 +1,64 @@
 package com.fehteh.springhashmapnavigation.transformer;
 
 import com.fehteh.springhashmapnavigation.navigation.NavigationServiceContext;
-
 import java.util.*;
 
+/**
+ * Copies fields or arrays from a origin path to a destination path. The destination path is relative to the origin path.
+ * You can move level up or level down - creating new paths - (move backward or forward) on the origin path to have a destination.
+ * The field can also be an Object.
+ *
+ * @Example
+ * <pre>
+ * 1. Copying fields:
+ *{@code
+ * metadata.productCount.count = 3
+ * path = "metadata.productCount.count"
+ * targetPath = "../../newField"
+ *}
+ * The object will have this new path with the value {@code metadata.newField = 3}
+ *
+ *
+ * 2. Copying Arrays in Arrays:
+ *{@code
+ * metadata.products.relevantContext.offers = [
+ *      {staticId: D2C_OFFER_MONTH}
+ *      {staticId: D2C_OFFER_MONTH}
+ *      {staticId: D2C_OFFER_DAY_2}
+ * ]
+ * path = "metadata.products.relevantContext.offers"
+ * targetPath = "../../relevantContext/newOffers"
+ *}
+ * Since "products" is an array, all elements of the array will have this new path if the offers array are not null.
+ * Each "products" element will have this new path with the value
+ *{@code metadata.product.relevantContext.newOffers = [
+ *     {staticId: D2C_OFFER_MONTH}
+ *     {staticId: D2C_OFFER_MONTH}
+ *     {staticId: D2C_OFFER_DAY_2}
+ *]}
+ * Note: if "relevantContext" already exists in the path, it won't override the value, it will move forward in the path
+ *
+ *
+ * 3. Copying Array elements to outside of the Array:
+ * {@code
+ * metadata.products.relevantContext.offers = [
+ *      {staticId: D2C_OFFER_MONTH}
+ *      {staticId: D2C_OFFER_MONTH}
+ *      {staticId: D2C_OFFER_DAY_2}
+ * ]
+ * path = "metadata.products.relevantContext.offers"
+ * targetPath = "../../../newOffers"
+ *}
+ * Result (if the newOffers already exists it will override the value
+ *{@code metadata.newOffers = [
+ *     {staticId: D2C_OFFER_MONTH}
+ *     {staticId: D2C_OFFER_MONTH}
+ *     {staticId: D2C_OFFER_DAY_2}
+ *]}
+ * </pre>
+ */
 public class CopyTo extends AbstractTransformer {
     private Object newValue;
-
     private List<Object> accumulatorArray = new ArrayList<>();
 
 
@@ -47,7 +99,7 @@ public class CopyTo extends AbstractTransformer {
     }
 
     @Override
-    boolean putValue(String fieldName, Object newValue, boolean overrideField) {
+    protected boolean putValue(String fieldName, Object newValue, boolean overrideField) {
         Map<?,?> map = (Map<?, ?>) getValueObj();
 
         if(!accumulatorArray.isEmpty()) {
