@@ -1,7 +1,7 @@
 package com.fehteh.springhashmapnavigation;
 
 import com.fehteh.springhashmapnavigation.navigation.NavigationService;
-import com.fehteh.springhashmapnavigation.transformer.SetIfContains;
+import com.fehteh.springhashmapnavigation.navigation.transformer.SetIfContains;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

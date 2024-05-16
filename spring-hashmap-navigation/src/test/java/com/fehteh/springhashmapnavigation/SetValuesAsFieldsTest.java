@@ -1,14 +1,14 @@
 package com.fehteh.springhashmapnavigation;
 
 import com.fehteh.springhashmapnavigation.navigation.NavigationService;
-import com.fehteh.springhashmapnavigation.transformer.SetValuesAsBooleanFields;
+import com.fehteh.springhashmapnavigation.navigation.transformer.SetValuesAsFields;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SetValuesAsBooleanFieldsTest {
+public class SetValuesAsFieldsTest {
     @Test
     void setValuesAsBooleanFieldsBubbleUpField() {
         Map<String, Object> struct = SpringHashmapNavigationApplication.createStruct();
@@ -17,7 +17,7 @@ public class SetValuesAsBooleanFieldsTest {
         assertNotNull(metadata);
 
         NavigationService navigationService = new NavigationService();
-        navigationService.navigateAndApply(struct, "metadata.productName.name", new SetValuesAsBooleanFields("../..", true));
+        navigationService.navigateAndApply(struct, "metadata.productName.name", new SetValuesAsFields("../..", true));
 
         assertTrue((Boolean) metadata.get("subscriptionName"));
     }
@@ -30,7 +30,7 @@ public class SetValuesAsBooleanFieldsTest {
         assertNotNull(metadata);
 
         NavigationService navigationService = new NavigationService();
-        navigationService.navigateAndApply(struct, "metadata.productName.name", new SetValuesAsBooleanFields("../newField", true));
+        navigationService.navigateAndApply(struct, "metadata.productName.name", new SetValuesAsFields("../newField", true));
 
         Map<String, Object> productName = (Map<String, Object>) metadata.get("productName");
 
@@ -57,7 +57,7 @@ public class SetValuesAsBooleanFieldsTest {
         assertEquals("D2B_SUBSCRIPTION_YEAR", staticId2);
 
         NavigationService navigationService = new NavigationService();
-        navigationService.navigateAndApply(struct, "metadata.products.staticId", new SetValuesAsBooleanFields("../..", true));
+        navigationService.navigateAndApply(struct, "metadata.products.staticId", new SetValuesAsFields("../..", true));
 
         boolean d2cSubscriptionMonth = (boolean) metadata.get("d2cSubscriptionMonth");
         boolean d2bSubscriptionMonth = (boolean) metadata.get("d2bSubscriptionMonth");
@@ -86,7 +86,7 @@ public class SetValuesAsBooleanFieldsTest {
         assertEquals("D2B_SUBSCRIPTION_YEAR", staticId2);
 
         NavigationService navigationService = new NavigationService();
-        navigationService.navigateAndApply(struct, "metadata.products.staticId", new SetValuesAsBooleanFields("newField/staticId", true));
+        navigationService.navigateAndApply(struct, "metadata.products.staticId", new SetValuesAsFields("newField/staticId", true));
 
         Map<String, Object> newField = (Map<String, Object>) products.get(0).get("newField");
         Map<String, Object> newStaticId = (Map<String, Object>) newField.get("staticId");

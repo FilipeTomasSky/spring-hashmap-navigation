@@ -1,4 +1,4 @@
-package com.fehteh.springhashmapnavigation.transformer;
+package com.fehteh.springhashmapnavigation.navigation.transformer;
 
 import com.fehteh.springhashmapnavigation.navigation.NavigationServiceContext;
 

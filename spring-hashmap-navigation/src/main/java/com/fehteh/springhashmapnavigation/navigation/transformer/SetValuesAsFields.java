@@ -1,14 +1,50 @@
-package com.fehteh.springhashmapnavigation.transformer;
+package com.fehteh.springhashmapnavigation.navigation.transformer;
 
 import com.fehteh.springhashmapnavigation.navigation.NavigationServiceContext;
 
 import java.util.*;
 
-public class SetValuesAsBooleanFields extends AbstractTransformer {
+public class SetValuesAsFields extends AbstractTransformer {
     private final Object newValue;
     private List<String> newFieldNames = new ArrayList<>();
 
-    public SetValuesAsBooleanFields(String targetPath, Object newValue) {
+    /**
+     * Set valueObj as a field formatting to camel case with a given value, if NavigationService's path exists (reached full path when navigating)
+     * In arrays if the path exists in several elements it will be set for all the elements
+     *
+     * @param targetPath Full path relative to the NavigationService's path for the field to be set
+     * @param newValue New value for the new field
+     *
+     * @Example
+     * <pre>
+     * 1. Setting fields:
+     *{@code
+     * metadata.productName.name = subscriptionName
+     * NavigationService's path = "metadata.productName.name"
+     * targetPath = "../.."s
+     * newValue = true
+     *}
+     * {@code metadata.subscriptionName = true} is created
+     *
+     *
+     * 2. Setting element of arrays:
+     *{@code metadata.products = [
+     *     {staticId: D2C_SUBSCRIPTION_MONTH}
+     *     {staticId: D2B_SUBSCRIPTION_MONTH}
+     *     {staticId: D2B_SUBSCRIPTION_YEAR}
+     *]}
+     *{@code
+     * NavigationService's path = "metadata.products.staticId"
+     * targetPath = "../.."
+     * newValue = true;
+     *}
+     * {@code metadata.d2cSubscriptionMonth = true} is created
+     * {@code metadata.d2bSubscriptionMonth = true} is created
+     * {@code metadata.d2bSubscriptionYear = true} is created
+     * </pre>
+     */
+
+    public SetValuesAsFields(String targetPath, Object newValue) {
         this.targetPath = targetPath;
         this.newValue = newValue;
 

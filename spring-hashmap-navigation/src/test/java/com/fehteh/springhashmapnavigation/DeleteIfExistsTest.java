@@ -1,7 +1,7 @@
 package com.fehteh.springhashmapnavigation;
 
 import com.fehteh.springhashmapnavigation.navigation.NavigationService;
-import com.fehteh.springhashmapnavigation.transformer.DeleteIfExists;
+import com.fehteh.springhashmapnavigation.navigation.transformer.DeleteIfExists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

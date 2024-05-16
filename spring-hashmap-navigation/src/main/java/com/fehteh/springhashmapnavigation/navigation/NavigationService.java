@@ -1,6 +1,6 @@
 package com.fehteh.springhashmapnavigation.navigation;
 
-import com.fehteh.springhashmapnavigation.transformer.AbstractTransformer;
+import com.fehteh.springhashmapnavigation.navigation.transformer.AbstractTransformer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,6 +69,7 @@ public class NavigationService {
      * path = "metadata.products.relevantContext.offers"
      * }</pre>
      */
+
     public void navigateAndApply(Map<String, Object> objectMap, String path, AbstractTransformer transformer) {
         navigateAndApplyRecursive(objectMap, new NavigationServiceContext(path), transformer);
     }
