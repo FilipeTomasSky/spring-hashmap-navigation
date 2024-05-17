@@ -7,7 +7,9 @@ public class SetIfContains extends AbstractTransformer {
     private final Object newValue;
 
     /**
-     * If the valueObj contains comparableValue, set a newValue in the targetPath, if NavigationService's path exists (reached full path when navigating)
+     * Set a given value in the given target path if objValue contains another given value and
+     * if NavigationServiceContext reaches the end when navigating, by checking if the current navigation is the last element of the navigationPath and valueObj must contain the comparableValue.
+     *
      * Target path can move levels up or down (creating new paths) relatively to the NavigationService's path.
      * @param targetPath Full path relative to the NavigationService's path for the field to be set
      * @param comparableValue Value to be compared with the valueObj
@@ -50,14 +52,14 @@ public class SetIfContains extends AbstractTransformer {
         if(!toApply && ctx.isLastElement()) {
             if(getValueObj() != null && (getValueObj().toString()).contains(comparableValue)) {
                 toApply = true;
-                toApplyNextIndex = ctx.index;
+                toApplyNextIndex = ctx.pathLevel;
             }
         }
 
-        if(toApply && ctx.index <= toApplyNextIndex) {
+        if(toApply && ctx.pathLevel <= toApplyNextIndex) {
             if(!isObjValueCollectionType()) {
                 if(targetPathList.get(0).equals("..")) {
-                    toApplyNextIndex = ctx.index - 1;
+                    toApplyNextIndex = ctx.pathLevel - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
                     if(createPath(targetPathList, targetPathList.size()-1)) {

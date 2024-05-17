@@ -65,7 +65,7 @@ public abstract class AbstractTransformer {
      * @return {@code true} if base valueObj is a Map, {@code false} otherwise
      */
     protected boolean createPath(List<String> targetPathList, int nrOfElements) {
-        if(isObjValueMapType()) {
+        if(isObjValueMapType() && !targetPathList.isEmpty()) {
             Map<?,?> map = (Map<?, ?>) valueObj;
             int limit = targetPathList.size() - nrOfElements;
 
@@ -92,7 +92,7 @@ public abstract class AbstractTransformer {
      * @param fieldName The name of the field (key) to insert
      * @param newValue The value to insert for the given field
      * @param overrideField true if field exists, and it's to be overridden or false otherwise
-     * @return {@code true} if base valueObj is a Map, {@code false} otherwise
+     * @return {@code true} if field was inserted or it was overridden, {@code false} otherwise
      */
 
     protected boolean putValue(String fieldName, Object newValue, boolean overrideField) {
@@ -171,11 +171,11 @@ public abstract class AbstractTransformer {
     }
 
     private void print(NavigationServiceContext ctx) {
-        int index = ctx.index;
-        int arrayIndex = ctx.getArrayIndex();
+        int index = ctx.pathLevel;
+        int arrayIndex = ctx.getLastArrayIterationIndexMap();
         boolean lastElement = ctx.isLastElement();
         String valueClass = valueObj != null ? valueObj.getClass().getSimpleName() : "null";
 
-        System.out.println("AbstractTransformer: " + ctx.getCurrentFullpath() + " [key:" + ctx.getCurrentPath() + "]" + " [valueObj:" + valueClass + "]" + " [index:" + index + "]" + " [arrayIndex:" + arrayIndex + "]" + " [lastElement:" + lastElement + "]");
+        System.out.println("AbstractTransformer: " + ctx.getCurrentFullPath() + " [key:" + ctx.getCurrentPath() + "]" + " [valueObj:" + valueClass + "]" + " [index:" + index + "]" + " [arrayIndex:" + arrayIndex + "]" + " [lastElement:" + lastElement + "]");
     }
 }

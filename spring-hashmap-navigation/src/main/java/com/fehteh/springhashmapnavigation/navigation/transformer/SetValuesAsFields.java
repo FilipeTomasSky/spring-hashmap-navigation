@@ -9,8 +9,12 @@ public class SetValuesAsFields extends AbstractTransformer {
     private List<String> newFieldNames = new ArrayList<>();
 
     /**
-     * Set valueObj as a field formatting to camel case with a given value, if NavigationService's path exists (reached full path when navigating)
-     * In arrays if the path exists in several elements it will be set for all the elements
+     * Set valueObj as a new field's name formatted to camel case with a given value in a given path and
+     * if NavigationServiceContext reaches the end when navigating, by checking if the current navigation is the last element of the navigationPath and valueObj must be a string and not null.
+     *
+     * If NavigationServiceContext is navigating an array, all elements will be iterated and all the fields that meet the same conditions are set.
+     * Does not override existing fields.
+     * Target path can move levels up or down (creating new paths) relatively to the NavigationService's path.
      *
      * @param targetPath Full path relative to the NavigationService's path for the field to be set
      * @param newValue New value for the new field
@@ -27,7 +31,7 @@ public class SetValuesAsFields extends AbstractTransformer {
      * {@code metadata.subscriptionName = true} is created
      *
      *
-     * 2. Setting element of arrays:
+     * 2. Setting fields from elements of arrays:
      *{@code metadata.products = [
      *     {staticId: D2C_SUBSCRIPTION_MONTH}
      *     {staticId: D2B_SUBSCRIPTION_MONTH}
@@ -56,12 +60,12 @@ public class SetValuesAsFields extends AbstractTransformer {
         if(ctx.isLastElement() && isObjValueStringType()) {
             if(!toApply) {
                 toApply = true;
-                toApplyNextIndex = ctx.index;
+                toApplyNextIndex = ctx.pathLevel;
             }
             newFieldNames.add(formatToCamelCase((String) getValueObj()));
         }
 
-        if(toApply && ctx.index <= toApplyNextIndex) {
+        if(toApply && ctx.pathLevel <= toApplyNextIndex) {
             if(isObjValueCollectionType()) {
                 return;
             }
@@ -71,7 +75,7 @@ public class SetValuesAsFields extends AbstractTransformer {
                 resetTransformer();
             } else {
                 if(targetPathList.get(0).equals("..")) {
-                    toApplyNextIndex = ctx.index - 1;
+                    toApplyNextIndex = ctx.pathLevel - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
                     if(createPath(targetPathList, targetPathList.size())) {

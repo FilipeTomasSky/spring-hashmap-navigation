@@ -4,36 +4,42 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class NavigationServiceContext {
-    public int index = 0;
-    Map<Integer, Integer> arrayIndex; // key -> index of where the array is; arrayIndex -> index inside of the array
+    public int pathLevel = 0;
+    /**
+     * HashMap to track array iteration indices.
+     * This map helps in managing array iteration by keeping track of the current index position for each array level in the path.
+     * Key: Represents the level of the array in the navigationPath
+     * Value: Represents the last index of the array being iterated at that level
+     */
+    Map<Integer, Integer> arrayIterationIndexMap;
 
-    List<String> pathSplit;
+    List<String> navigationPath;
 
     public NavigationServiceContext(String path) {
-        this.pathSplit = Arrays.asList(path.split("\\.+"));
-        this.arrayIndex = new HashMap<>();
+        this.navigationPath = Arrays.asList(path.split("\\.+"));
+        this.arrayIterationIndexMap = new HashMap<>();
     }
 
     public String getCurrentPath() {
-        return pathSplit.get(index);
+        return navigationPath.get(pathLevel);
     }
 
-    public String getCurrentFullpath() {
-        return pathSplit.subList(0, index + 1).stream().collect(Collectors.joining("."));
+    public String getCurrentFullPath() {
+        return navigationPath.subList(0, pathLevel + 1).stream().collect(Collectors.joining("."));
     }
 
     public boolean isLastElement() {
-        return pathSplit.size() - 1 == index;
+        return navigationPath.size() - 1 == pathLevel;
     }
 
-    public void incIndex() {this.index++;}
-    public void decIndex() {this.index--;}
+    public void incPathLevel() {this.pathLevel++;}
+    public void decPathLevel() {this.pathLevel--;}
 
-    public int getArrayIndex() {
-        return arrayIndex.size() > 0 && arrayIndex.containsKey(this.index) ? arrayIndex.get(this.index) : 0;
+    public int getLastArrayIterationIndexMap() {
+        return arrayIterationIndexMap.size() > 0 && arrayIterationIndexMap.containsKey(this.pathLevel) ? arrayIterationIndexMap.get(this.pathLevel) : 0;
     }
-    public void setArrayIndex(int arrayIndex) {
-        this.arrayIndex.put(this.index, arrayIndex);
+    public void setLastArrayIterationIndexMap(int arrayIterationIndexMap) {
+        this.arrayIterationIndexMap.put(this.pathLevel, arrayIterationIndexMap);
     }
 
 }

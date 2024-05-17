@@ -6,7 +6,9 @@ public class SetIfMissing extends AbstractTransformer {
     private final Object newValue;
 
     /**
-     * Set a given value in the target path if objValue is null, if NavigationService's path exists (reached full path when navigating)
+     * Set a value in the given target path if objValue is null and
+     * if NavigationServiceContext reaches the end when navigating, by checking if the current navigation is the last element of the navigationPath and valueObj must be null.
+     *
      * Target path can move levels up or down (creating new paths) relatively to the NavigationService's path.
      * @param targetPath Full path relative to the NavigationService's path for the field to be set
      * @param newValue New value for the new field if valueObj contains comparableValue
@@ -19,7 +21,7 @@ public class SetIfMissing extends AbstractTransformer {
      * targetPath = "../../newField"
      * newValue = true
      *}
-     * {@code metadata.productCount = true} is created if "missing" is null
+     * {@code metadata.productCount = true} is created since "missing" is null
      *
      *
      * 2. Setting fields in array elements:
@@ -43,13 +45,13 @@ public class SetIfMissing extends AbstractTransformer {
     public void runTransformer(String navigationElement, NavigationServiceContext ctx) {
         if(!toApply && getValueObj() == null) {
             toApply = true;
-            toApplyNextIndex = ctx.index;
+            toApplyNextIndex = ctx.pathLevel;
         }
 
-        if(toApply && ctx.index <= toApplyNextIndex) {
+        if(toApply && ctx.pathLevel <= toApplyNextIndex) {
             if(!isObjValueCollectionType()) {
                 if(targetPathList.get(0).equals("..")) {
-                    toApplyNextIndex = ctx.index - 1;
+                    toApplyNextIndex = ctx.pathLevel - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
                     if(createPath(targetPathList, targetPathList.size()-1)) {

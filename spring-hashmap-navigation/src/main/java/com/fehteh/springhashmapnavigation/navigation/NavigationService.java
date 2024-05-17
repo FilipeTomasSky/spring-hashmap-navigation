@@ -9,13 +9,17 @@ import java.util.Map;
 public class NavigationService {
 
     /**
-     * Navigates a Map<String,Object> that represents a JSON for a given path, applying the AbstractTransformer on all elements of the path.
+     * Navigates a Map<String,Object> that represents a JSON for a given navigationPath, applying the AbstractTransformer on all elements of the navigationPath.
      * The AbstractTransformer has the actions and/or conditions to either apply or not.
      *
+     * The NavigationServiceContext is always in sync with Object that {@code public void run(String navigationElement, NavigationServiceContext ctx, Object valueObj)}.
+     * The objectMap is being updated when iterating the navigationPath, meaning that the NavigationServiceContext holds the current information of the current objectMap,
+     * holding information of the current level path, array indexes if the path as arrays, class type of the current Object
+     *
      * @param objectMap The Map that which has key as String and value as Object. The value can be a Map, Collection, String, int, boolean
-     * @param path The path relative to the Map, with path elements separated with "." and can't take array index (the AbstractTransformer can have array index information, NOT this path).
+     * @param navigationPath The navigationPath relative to the Map, with navigationPath elements separated with "." and can't take array index (the AbstractTransformer can have array index information, NOT this navigationPath).
      *             The array will be navigated through all elements unless AbstractTransformer stops the navigation.
-     * @param transformer The AbstractTransformer with the actions and/or conditions to apply or not to each element in the path
+     * @param transformer The AbstractTransformer with the actions and/or conditions to apply or not to each element in the navigationPath
      *
      * @example
      * Example of objectMap
@@ -60,18 +64,18 @@ public class NavigationService {
      *  }
      * }</pre>
      *
-     * Example of path:
+     * Example of navigationPath:
      * <pre>{@code
-     * path = "metadata.productCount.count"
+     * navigationPath = "metadata.productCount.count"
      * }</pre>
      * or if it's an array:
      * <pre>{@code
-     * path = "metadata.products.relevantContext.offers"
+     * navigationPath = "metadata.products.relevantContext.offers"
      * }</pre>
      */
 
-    public void navigateAndApply(Map<String, Object> objectMap, String path, AbstractTransformer transformer) {
-        navigateAndApplyRecursive(objectMap, new NavigationServiceContext(path), transformer);
+    public void navigateAndApply(Map<String, Object> objectMap, String navigationPath, AbstractTransformer transformer) {
+        navigateAndApplyRecursive(objectMap, new NavigationServiceContext(navigationPath), transformer);
     }
 
     private void navigateAndApplyRecursive(Object entryObject, NavigationServiceContext context, AbstractTransformer transformer) {
@@ -82,16 +86,16 @@ public class NavigationService {
         }
 
         if(entryObject instanceof Collection<?> arrayList) {
-            context.decIndex();
+            context.decPathLevel();
 
-            for(context.setArrayIndex(0); context.getArrayIndex() < arrayList.size(); context.setArrayIndex(context.getArrayIndex() + 1)) {
-                Object childrenObject = ((ArrayList<?>) arrayList).get(context.getArrayIndex());
+            for(context.setLastArrayIterationIndexMap(0); context.getLastArrayIterationIndexMap() < arrayList.size(); context.setLastArrayIterationIndexMap(context.getLastArrayIterationIndexMap() + 1)) {
+                Object childrenObject = ((ArrayList<?>) arrayList).get(context.getLastArrayIterationIndexMap());
                 runTransformer(childrenObject, context, transformer);
                 transformer.run(context.getCurrentPath(), context, entryObject);
             }
 
-            context.setArrayIndex(context.getArrayIndex() - 1);
-            context.incIndex();
+            context.setLastArrayIterationIndexMap(context.getLastArrayIterationIndexMap() - 1);
+            context.incPathLevel();
         }
     }
 
@@ -107,10 +111,12 @@ public class NavigationService {
         transformer.run(context.getCurrentPath(), context, childrenObject);
 
         if(!context.isLastElement()) {
-            context.incIndex();
+            context.incPathLevel();
+            // Continue to the next elements
             navigateAndApplyRecursive(childrenObject, context, transformer);
 
-            context.decIndex();
+            // Run the transformer for each element already navigated
+            context.decPathLevel();
             transformer.run(context.getCurrentPath(), context, childrenObject);
         }
     }

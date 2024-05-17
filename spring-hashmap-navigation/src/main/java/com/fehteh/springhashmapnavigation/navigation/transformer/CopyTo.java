@@ -8,8 +8,8 @@ public class CopyTo extends AbstractTransformer {
     private List<Object> accumulatorArray = new ArrayList<>();
 
     /**
-     * Copies valueObj (the value can be any Object - Collection, Map, String, boolean) for a target path,
-     * if NavigationService's path exists (reached full path when navigating)
+     * Copies valueObj (the value can be any Object - Collection, Map, String, boolean) to a given target path,
+     * if NavigationServiceContext reaches the end when navigating, by checking if the current navigation is the last element of the navigationPath and valueObj must not be null.
      * Target path can move levels up or down (creating new paths) relatively to the NavigationService's path.
      * The field can also be an Object.
      *
@@ -75,7 +75,7 @@ public class CopyTo extends AbstractTransformer {
         if(!toApply && ctx.isLastElement() || ctx.isLastElement() && isObjValueCollectionType()) {
             if(getValueObj() != null) {
                 toApply = true;
-                toApplyNextIndex = ctx.index;
+                toApplyNextIndex = ctx.pathLevel;
                 newValue = getValueObj();
                 this.targetPathList = new ArrayList<>(Arrays.asList(targetPath.split("/")));
 
@@ -85,10 +85,10 @@ public class CopyTo extends AbstractTransformer {
             }
         }
 
-        if(toApply && ctx.index <= toApplyNextIndex) {
+        if(toApply && ctx.pathLevel <= toApplyNextIndex) {
             if(ctx.isLastElement() || !(isObjValueCollectionType())) {
                 if(targetPathList.get(0).equals("..")) {
-                    toApplyNextIndex = ctx.index - 1;
+                    toApplyNextIndex = ctx.pathLevel - 1;
                     targetPathList = targetPathList.subList(1, targetPathList.size());
                 } else {
                     if(createPath(targetPathList, targetPathList.size()-1)) {
